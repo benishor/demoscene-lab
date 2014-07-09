@@ -1,11 +1,21 @@
 #include <Timer.h>
 
+using namespace std;
+
 Timer::Timer() {
-    startTime = std::chrono::system_clock::now();
+    startTime = chrono::system_clock::now();
+    lastLapTime = startTime;
 }
 
 double Timer::secondsSinceStart() {
-    std::chrono::time_point<std::chrono::system_clock> currentTime = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsedSeconds = currentTime - startTime;
+    chrono::time_point<chrono::system_clock> currentTime = chrono::system_clock::now();
+    chrono::duration<double> elapsedSeconds = currentTime - startTime;
+    return elapsedSeconds.count();
+}
+
+double Timer::lap() {
+    chrono::time_point<chrono::system_clock> currentTime = chrono::system_clock::now();
+    chrono::duration<double> elapsedSeconds = currentTime - lastLapTime;
+    lastLapTime = currentTime;
     return elapsedSeconds.count();
 }
