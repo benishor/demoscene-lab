@@ -9,6 +9,7 @@ Requirements:
 
 - C++11 compiler
 - SDL2 development library
+- OpenGL development libraries
 - OpenGL 2.1 enabled computer
 
 ### SDL2 development library
