@@ -28,4 +28,4 @@ For other systems try your luck here: https://www.libsdl.org/download-2.0.php
 
 ### Compiling and running
 
-Just run `make` in the folder that contains `Makefile`
+Just run `make` with the proper `Makefile`

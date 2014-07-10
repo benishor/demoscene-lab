@@ -1,6 +1,5 @@
 #include <Window.h>
 #include <Timer.h>
-#include <GL/gl.h>
 #include <CubeScene.h>
 
 int main() {
