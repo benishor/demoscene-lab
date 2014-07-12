@@ -9,10 +9,10 @@ void drawNormals(const Mesh& mesh) {
                                mesh.vertices[f.c].position) / 3.0;
         Vector3 endPoint = centerPoint + f.normal * 0.1;
 
-	    glColor4fv(mesh.material.colour.array);
+        glColor4fv(mesh.material.diffuse.array);
         glVertex3d(centerPoint.x, centerPoint.y, centerPoint.z);
 
-	    glColor4fv(mesh.material.colour.array);
+        glColor4fv(mesh.material.diffuse.array);
         glVertex3d(endPoint.x, endPoint.y, endPoint.z);
     }
     glEnd();

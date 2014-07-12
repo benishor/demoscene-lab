@@ -5,8 +5,8 @@
 
 struct PointLight {
     Vector3 position;
+    float intensity = 1.0;
     Colour ambient;
     Colour diffuse;
     Colour specular;
-    Colour emissive;
 };

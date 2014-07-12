@@ -2,7 +2,9 @@
 #include <GLheaders.h>
 
 void renderWireframe(const Mesh& mesh) {
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, mesh.material.colour.array);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mesh.material.ambient.array);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mesh.material.diffuse.array);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mesh.material.specular.array);
     glBegin(GL_LINES);
     for (auto& e : mesh.edges) {
         glVertex3d(mesh.vertices[e.from].position.x, mesh.vertices[e.from].position.y, mesh.vertices[e.from].position.z);
@@ -12,9 +14,10 @@ void renderWireframe(const Mesh& mesh) {
 }
 
 void renderSolid(const Mesh& mesh) {
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, mesh.material.colour.array);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, new GLfloat[4] {0.0f, 1.0f, 0.0f, 1.0f});
-    glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 128);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mesh.material.ambient.array);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mesh.material.diffuse.array);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mesh.material.specular.array);
+    glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 20);
 
     glBegin(GL_TRIANGLES);
     for (auto& f : mesh.facets) {
@@ -46,9 +49,10 @@ void renderMesh(const Mesh& mesh) {
 
 void setupLight(const PointLight& light, int lightIndex) {
     glEnable(GL_LIGHT0 + lightIndex);
-    glLightfv(GL_LIGHT0 + lightIndex, GL_AMBIENT, light.ambient.array);
-    glLightfv(GL_LIGHT0 + lightIndex, GL_DIFFUSE, light.diffuse.array);
-    glLightfv(GL_LIGHT0 + lightIndex, GL_SPECULAR,light.specular.array);
+    glLightfv(GL_LIGHT0 + lightIndex, GL_AMBIENT, (light.ambient * light.intensity).array);
+    glLightfv(GL_LIGHT0 + lightIndex, GL_DIFFUSE, (light.diffuse * light.intensity).array);
+    glLightfv(GL_LIGHT0 + lightIndex, GL_SPECULAR, (light.specular * light.intensity).array);
+
     glLightfv(GL_LIGHT0 + lightIndex, GL_POSITION, new GLfloat[4] {
         static_cast<GLfloat>(light.position.x),
         static_cast<GLfloat>(light.position.y),
@@ -62,7 +66,7 @@ void disableLight(int lightIndex) {
 }
 
 void Renderer::render(const Scene& scene) {
-	// it may be smooth but we use face normals, so we'll get flat shading
+    // it may be smooth but we use face normals, so we'll get flat shading
     glShadeModel(GL_SMOOTH);
 
     glEnable(GL_DEPTH_TEST);

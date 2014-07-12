@@ -8,6 +8,8 @@ enum class RenderType {
 };
 
 struct Material {
-    Colour colour;
+    Colour ambient;
+    Colour diffuse;
+    Colour specular;
     RenderType renderType;
 };

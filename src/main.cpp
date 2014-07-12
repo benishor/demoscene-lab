@@ -7,9 +7,9 @@ int main() {
 
     CubeScene cubeScene;
     Timer timer;
-    while (timer.secondsSinceStart() < 10) {
+    while (timer.secondsSinceStart() < 5) {
 
-    	SDL_Event e;
+        SDL_Event e;
         while (SDL_PollEvent(&e)) {}
 
         cubeScene.update(timer.lap());

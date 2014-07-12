@@ -14,8 +14,8 @@ private:
 
     void setupCubePositionsAndRotations();
 
-
     Scene scene;
     Renderer renderer;
     Randomizer randomizer;
+    double elapsedTimeInSeconds = 0;
 };
