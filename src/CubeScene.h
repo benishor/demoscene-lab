@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Mesh.h>
+#include <Renderer.h>
 #include <Randomizer.h>
 
 class CubeScene {
@@ -14,6 +14,8 @@ private:
 
     void setupCubePositionsAndRotations();
 
-    Mesh meshes[3];
+
+    Scene scene;
+    Renderer renderer;
     Randomizer randomizer;
 };

@@ -1,12 +1,16 @@
 #pragma once
+
 #include <vector>
+#include <Vector3.h>
+#include <Material.h>
 
 struct Vertex {
-    double x, y, z;
+    Vector3 position;
 };
 
 struct Facet {
     int a, b, c;
+    Vector3 normal;
 };
 
 struct Edge {
@@ -17,14 +21,16 @@ struct Edge {
 class Mesh {
 public:
 
-    void applyTransformation();
-    void renderWireframe();
+    void applyTransformation() const;
+    void calculateNormals();
 
-    Vertex position;
-    Vertex rotationAxis;
+    Vector3 position;
+    Vector3 rotationAxis;
     double rotationAngle = 0;
 
     std::vector<Vertex> vertices;
     std::vector<Facet> facets;
     std::vector<Edge> edges;
+
+    Material material;
 };
