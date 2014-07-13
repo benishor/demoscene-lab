@@ -13,7 +13,7 @@ public:
     virtual ~Window();
 
     void present();
-    void pollEvents();
+    bool shouldQuit();
 
 private:
     void initOpenGL();

@@ -23,9 +23,16 @@ void Window::present() {
     SDL_RenderPresent(displayRenderer);
 }
 
-void Window::pollEvents() {
+bool Window::shouldQuit() {
     SDL_Event e;
-    while (SDL_PollEvent(&e)) {}
+    while (SDL_PollEvent(&e)) {
+        if (e.type == SDL_QUIT)
+            return true;
+        else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
+            return true;
+    }
+
+    return false;
 }
 
 void Window::initOpenGL() {

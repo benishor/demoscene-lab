@@ -7,8 +7,7 @@ int main() {
 
     CubeScene cubeScene;
     Timer timer;
-    while (timer.secondsSinceStart() < 5) {
-        window.pollEvents();
+    while (!window.shouldQuit() && timer.secondsSinceStart() < 5) {
         cubeScene.update(timer.lap());
         cubeScene.render();
         window.present();
