@@ -34,8 +34,7 @@ CubeScene::CubeScene() {
 }
 
 float lightIntensityForCurrentTime(double elapsedTimeInSeconds) {
-    float result = fabs(sin((elapsedTimeInSeconds / 5.0) * 3.1415926 * 2));
-    return result;
+    return fabs(sin((elapsedTimeInSeconds / 5.0) * 3.1415926 * 2));
 }
 
 void CubeScene::update(double secondsSinceLastUpdate) {

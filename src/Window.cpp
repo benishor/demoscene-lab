@@ -23,6 +23,11 @@ void Window::present() {
     SDL_RenderPresent(displayRenderer);
 }
 
+void Window::pollEvents() {
+    SDL_Event e;
+    while (SDL_PollEvent(&e)) {}
+}
+
 void Window::initOpenGL() {
     // Set up our viewing matrix
     glMatrixMode(GL_PROJECTION);

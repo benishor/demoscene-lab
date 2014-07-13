@@ -1,10 +1,4 @@
 #include <Mesh.h>
-#include <GLheaders.h>
-
-void Mesh::applyTransformation() const {
-    glTranslatef(position.x, position.y, position.z);
-    glRotated(rotationAngle, rotationAxis.x, rotationAxis.y, rotationAxis.z);
-}
 
 void Mesh::calculateNormals() {
 	for (auto& facet : facets) {

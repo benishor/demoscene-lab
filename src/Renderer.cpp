@@ -65,6 +65,12 @@ void disableLight(int lightIndex) {
     glDisable(GL_LIGHT0 + lightIndex);
 }
 
+void applyTransformation(const Mesh& mesh) {
+    glTranslatef(mesh.position.x, mesh.position.y, mesh.position.z);
+    glRotated(mesh.rotationAngle, mesh.rotationAxis.x, mesh.rotationAxis.y, mesh.rotationAxis.z);
+}
+
+
 void Renderer::render(const Scene& scene) {
     // it may be smooth but we use face normals, so we'll get flat shading
     glShadeModel(GL_SMOOTH);
@@ -78,7 +84,7 @@ void Renderer::render(const Scene& scene) {
 
     for (auto& mesh : scene.meshes) {
         glPushMatrix();
-        mesh.applyTransformation();
+        applyTransformation(mesh);
         renderMesh(mesh);
         glPopMatrix();
     }

@@ -21,7 +21,6 @@ struct Edge {
 class Mesh {
 public:
 
-    void applyTransformation() const;
     void calculateNormals();
 
     Vector3 position;
