@@ -5,4 +5,5 @@ class MeshBuilder {
 public:
 
     static Mesh cube();
+    static Mesh sphere(int longitudePoints, int latitudePoints);
 };

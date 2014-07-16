@@ -7,7 +7,7 @@ int main() {
 
     CubeScene cubeScene;
     Timer timer;
-    while (!window.shouldQuit() && timer.secondsSinceStart() < 5) {
+    while (!window.shouldQuit() && timer.secondsSinceStart() < 20) {
         cubeScene.update(timer.lap());
         cubeScene.render();
         window.present();

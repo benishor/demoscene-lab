@@ -17,7 +17,7 @@ void renderSolid(const Mesh& mesh) {
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mesh.material.ambient.array);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mesh.material.diffuse.array);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mesh.material.specular.array);
-    glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 20);
+    glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 2);
 
     glBegin(GL_TRIANGLES);
     for (auto& f : mesh.facets) {
