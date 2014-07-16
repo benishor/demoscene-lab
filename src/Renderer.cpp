@@ -21,13 +21,16 @@ void renderSolid(const Mesh& mesh) {
 
     glBegin(GL_TRIANGLES);
     for (auto& f : mesh.facets) {
-        glNormal3d(f.normal.x, f.normal.y, f.normal.z);
+        // glNormal3d(f.normal.x, f.normal.y, f.normal.z);
+        glNormal3d(mesh.vertices[f.a].normal.x, mesh.vertices[f.a].normal.y, mesh.vertices[f.a].normal.z);
         glVertex3d(mesh.vertices[f.a].position.x, mesh.vertices[f.a].position.y, mesh.vertices[f.a].position.z);
 
-        glNormal3d(f.normal.x, f.normal.y, f.normal.z);
+        // glNormal3d(f.normal.x, f.normal.y, f.normal.z);
+        glNormal3d(mesh.vertices[f.b].normal.x, mesh.vertices[f.b].normal.y, mesh.vertices[f.b].normal.z);
         glVertex3d(mesh.vertices[f.b].position.x, mesh.vertices[f.b].position.y, mesh.vertices[f.b].position.z);
 
-        glNormal3d(f.normal.x, f.normal.y, f.normal.z);
+        // glNormal3d(f.normal.x, f.normal.y, f.normal.z);
+        glNormal3d(mesh.vertices[f.c].normal.x, mesh.vertices[f.c].normal.y, mesh.vertices[f.c].normal.z);
         glVertex3d(mesh.vertices[f.c].position.x, mesh.vertices[f.c].position.y, mesh.vertices[f.c].position.z);
     }
     glEnd();

@@ -5,6 +5,17 @@
 
 struct Vector3 {
     double x, y, z;
+
+    void zero() {
+        x = y = z = 0;
+    }
+
+    const Vector3& operator += (const Vector3& other) {
+        x += other.x;
+        y += other.y;
+        z += other.z;
+        return *this;
+    }
 };
 
 inline Vector3 operator - (const Vector3& first, const Vector3& second) {
@@ -22,6 +33,8 @@ inline Vector3 operator + (const Vector3& first, const Vector3& second) {
         first.z + second.z
     };
 }
+
+
 
 inline Vector3 operator * (const Vector3& a, double amount) {
     return {
