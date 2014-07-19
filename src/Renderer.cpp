@@ -17,19 +17,37 @@ void renderSolid(const Mesh& mesh) {
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mesh.material.ambient.array);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mesh.material.diffuse.array);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mesh.material.specular.array);
-    glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 2);
+    glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 100);
+
+    if (mesh.material.texture) {
+        glEnable(GL_TEXTURE_2D);
+        mesh.material.texture->use();
+    } else {
+        glDisable(GL_TEXTURE_2D);
+    }
+
+    glDisable(GL_LIGHTING);
+
+    glEnable(GL_BLEND);
+    glDisable(GL_DEPTH_TEST);
+    // glBlendFunc(GL_ONE, GL_ONE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
 
     glBegin(GL_TRIANGLES);
     for (auto& f : mesh.facets) {
         // glNormal3d(f.normal.x, f.normal.y, f.normal.z);
+        glTexCoord2d(f.textCoords[0].u, f.textCoords[0].v);
         glNormal3d(mesh.vertices[f.a].normal.x, mesh.vertices[f.a].normal.y, mesh.vertices[f.a].normal.z);
         glVertex3d(mesh.vertices[f.a].position.x, mesh.vertices[f.a].position.y, mesh.vertices[f.a].position.z);
 
         // glNormal3d(f.normal.x, f.normal.y, f.normal.z);
+        glTexCoord2d(f.textCoords[1].u, f.textCoords[1].v);
         glNormal3d(mesh.vertices[f.b].normal.x, mesh.vertices[f.b].normal.y, mesh.vertices[f.b].normal.z);
         glVertex3d(mesh.vertices[f.b].position.x, mesh.vertices[f.b].position.y, mesh.vertices[f.b].position.z);
 
         // glNormal3d(f.normal.x, f.normal.y, f.normal.z);
+        glTexCoord2d(f.textCoords[2].u, f.textCoords[2].v);
         glNormal3d(mesh.vertices[f.c].normal.x, mesh.vertices[f.c].normal.y, mesh.vertices[f.c].normal.z);
         glVertex3d(mesh.vertices[f.c].position.x, mesh.vertices[f.c].position.y, mesh.vertices[f.c].position.z);
     }
@@ -57,10 +75,11 @@ void setupLight(const PointLight& light, int lightIndex) {
     glLightfv(GL_LIGHT0 + lightIndex, GL_SPECULAR, (light.specular * light.intensity).array);
 
     glLightfv(GL_LIGHT0 + lightIndex, GL_POSITION, new GLfloat[4] {
-        static_cast<GLfloat>(light.position.x),
-        static_cast<GLfloat>(light.position.y),
-        static_cast<GLfloat>(light.position.z),
-        1.0f
+        // static_cast<GLfloat>(light.position.x),
+        // static_cast<GLfloat>(light.position.y),
+        // static_cast<GLfloat>(light.position.z),
+        // 1.0f
+        0, 0, 1, 0
     });
 }
 
@@ -76,7 +95,7 @@ void applyTransformation(const Mesh& mesh) {
 
 void Renderer::render(const Scene& scene) {
     // it may be smooth but we use face normals, so we'll get flat shading
-    glShadeModel(GL_SMOOTH);
+    glShadeModel(GL_FLAT);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);

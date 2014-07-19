@@ -9,9 +9,15 @@ struct Vertex {
     Vector3 normal;
 };
 
+struct UV {
+    double u;
+    double v;
+};
+
 struct Facet {
     int a, b, c;
     Vector3 normal;
+    UV textCoords[3];
 };
 
 struct Edge {
