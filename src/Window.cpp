@@ -1,6 +1,6 @@
 #include <Window.h>
-#include <SDL2/SDL_opengl.h>
 #include <GLheaders.h>
+#include <SDL2/SDL_opengl.h>
 
 Window::Window(int w, int h, WindowType t)
     : width(w), height(h), type(t) {
@@ -11,6 +11,13 @@ Window::Window(int w, int h, WindowType t)
         windowFlags |= SDL_WINDOW_FULLSCREEN;
 
     SDL_CreateWindowAndRenderer(width, height, windowFlags, &displayWindow, &displayRenderer);
+
+    GLenum err = glewInit();
+    if (GLEW_OK != err) {
+        fprintf(stderr, "Error %s\n", glewGetErrorString(err));
+        exit(1);
+    }
+
     initOpenGL();
 }
 
