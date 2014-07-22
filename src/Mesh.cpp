@@ -1,10 +1,8 @@
 #include <Mesh.h>
 
 void Mesh::calculateNormals() {
-
-	for (auto& vertex : vertices) {
+	for (auto& vertex : vertices)
 		vertex.normal.zero();
-	}
 
 	for (auto& facet : facets) {
 		Vector3 a = vertices[facet.b].position - vertices[facet.a].position;
@@ -16,8 +14,7 @@ void Mesh::calculateNormals() {
 		vertices[facet.c].normal += facet.normal;
 	}
 
-	for (auto& vertex : vertices) {
+	for (auto& vertex : vertices)
 		vertex.normal = normalize(vertex.normal);
-	}
 }
 

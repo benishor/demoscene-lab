@@ -16,13 +16,13 @@ CubeScene::CubeScene() {
     scene.meshes[0].material.specular = {1, 1, 1, 1};
     scene.meshes[0].material.renderType = RenderType::Solid;
 
-    scene.meshes[2].material.ambient = {0.8, 0.8, 0.8, 1};
-    scene.meshes[2].material.diffuse = {1, 1, 1, 1};
+    scene.meshes[2].material.ambient = {0.2, 0.2, 0.2, 1};
+    scene.meshes[2].material.diffuse = {0.5, 0.4, 0.8, 1};
     scene.meshes[2].material.specular = {1, 1, 1, 1};
     scene.meshes[2].material.renderType = RenderType::Solid;
 
     scene.meshes[1].material.ambient = {0.2, 0.2, 0.2, 1};
-    scene.meshes[1].material.diffuse = {0, 0, 1, 1};
+    scene.meshes[1].material.diffuse = {0.6, 0.4, 0.6, 1};
     scene.meshes[1].material.specular = {1, 1, 1, 1};
     scene.meshes[1].material.renderType = RenderType::Solid;
     scene.meshes[1].material.texture = TextureGenerator(256, 256).checkerBoard(0, 32, {1, 0, 0, 0.5}, {0, 0, 0, 0.1}).roll(0, 0, 32).getTexture(0);
@@ -33,7 +33,7 @@ CubeScene::CubeScene() {
     PointLight light;
     light.position = {0, 0, 4};
     light.ambient = {0.2, 0.2, 0.2, 1};
-    light.diffuse = {0.5, 0.5, 0.5, 1};
+    light.diffuse = {0.8, 0.8, 0.8, 1};
     light.specular = {1, 1, 1, 1};
 
     scene.pointLights.push_back(light);
@@ -60,7 +60,7 @@ void CubeScene::render() {
     // Move the camera backwards so we can see more
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(0.0f, 0.0f, -2.5f);
+    glTranslatef(0.0f, 0.0f, -5.5f);
 
     renderer.render(scene);
 }

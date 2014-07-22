@@ -20,3 +20,9 @@
 *.out
 *.app
 main
+
+# build directory
+build
+
+# docs directory
+docs
