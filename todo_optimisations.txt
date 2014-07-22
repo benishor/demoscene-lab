@@ -1,0 +1,7 @@
+Possible optimizations
+======================
+
+- reduce bool sizes e.g bool isOpaque : 1;
+- use dietlibc or ulibc
+- compress material flags into an int
+- shader based texture generator?

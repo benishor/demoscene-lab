@@ -12,6 +12,7 @@ public:
     int getHeight() const;
 
     void use();
+    void unuse();
 
 private:
 

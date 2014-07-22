@@ -34,3 +34,7 @@ int Texture::getHeight() const {
 void Texture::use() {
     glBindTexture(GL_TEXTURE_2D, textureId);
 }
+
+void Texture::unuse() {
+    glBindTexture(GL_TEXTURE_2D, 0);
+}

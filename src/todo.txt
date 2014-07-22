@@ -1,0 +1,5 @@
+- vertex buffers
+- full shader architecture
+- own transforms
+- render to texture
+- particle engine
