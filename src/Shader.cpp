@@ -13,6 +13,15 @@ Shader::Shader(const char* vertexShaderContent, const char* pixelShaderContent) 
 	glAttachShader(programId, shaderIds[0]);
 	glAttachShader(programId, shaderIds[1]);
 	glLinkProgram(programId);
+
+	// ---
+	
+	glUseProgram(programId);
+	GLuint t1Location = glGetUniformLocation(programId, "colorMap");
+	GLuint t2Location = glGetUniformLocation(programId, "envMap");
+
+	glUniform1i(t1Location, 0);
+	glUniform1i(t2Location, 1);        	
 }
 
 Shader::~Shader() {

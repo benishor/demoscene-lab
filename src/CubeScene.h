@@ -2,6 +2,7 @@
 
 #include <Renderer.h>
 #include <Randomizer.h>
+#include <Camera.h>
 
 class CubeScene {
 public:
@@ -17,5 +18,6 @@ private:
     Scene scene;
     Renderer renderer;
     Randomizer randomizer;
+    Camera camera;
     double elapsedTimeInSeconds = 0;
 };

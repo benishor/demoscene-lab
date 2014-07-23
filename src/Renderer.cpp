@@ -74,8 +74,9 @@ void applyTransformation(const Mesh& mesh) {
 }
 
 
-void Renderer::render(const Scene& scene) {
-    // it may be smooth but we use face normals, so we'll get flat shading
+void Renderer::render(const Scene& scene, Camera& camera) {
+    camera.set();
+
     glEnable(GL_LIGHTING);
 
     int lightIndex = 0;

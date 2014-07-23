@@ -4,6 +4,7 @@
 #include <memory>
 #include <Texture.h>
 #include <Shader.h>
+#include <vector>
 
 enum class FillMode {
     Wireframe,
@@ -41,7 +42,7 @@ struct Material {
 
     FillMode fillMode = FillMode::Solid;
 
-    std::shared_ptr<Texture> texture;
+    std::vector<std::shared_ptr<Texture>> textures;
     std::shared_ptr<Shader> shader;
 
     void use() const;

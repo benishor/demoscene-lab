@@ -23,5 +23,5 @@ private:
     WindowType type;
 
     SDL_Window* displayWindow;
-    SDL_Renderer* displayRenderer;
+    SDL_GLContext glContext;
 };

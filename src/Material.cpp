@@ -51,9 +51,13 @@ void Material::use() const {
         glDisable(GL_CULL_FACE);
     }
 
-    if (texture) {
-        glEnable(GL_TEXTURE_2D);
-        texture->use();
+    if (!textures.empty()) {
+        int whichTexture = 0;
+        for (auto& texture : textures) {
+            glActiveTexture(GL_TEXTURE0 + whichTexture++);
+            glEnable(GL_TEXTURE_2D);
+            texture->use();
+        }
     } else {
         glDisable(GL_TEXTURE_2D);
     }
@@ -64,8 +68,15 @@ void Material::use() const {
 }
 
 void Material::unuse() const {
-    if (texture)
-        texture->unuse();
+    if (!textures.empty()) {
+        int whichTexture = 0;
+        for (auto& texture : textures) {
+            glActiveTexture(GL_TEXTURE0 + whichTexture++);
+            texture->unuse();
+        }
+
+        glDisable(GL_TEXTURE_2D);
+    }
 
     if (shader)
         shader->unuse();

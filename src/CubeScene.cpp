@@ -8,6 +8,9 @@ CubeScene::CubeScene() {
     // for (int i = 0; i < 2; i++)
     //     scene.meshes.push_back(MeshBuilder::cube());
 
+    camera.position = glm::vec3(0, 3, 3);
+    camera.target = {0, 0, 0};
+
     ShaderManager::init();
 
     scene.meshes.push_back(MeshBuilder::cube());
@@ -18,20 +21,35 @@ CubeScene::CubeScene() {
     scene.meshes[0].material.diffuse = {1, 0, 0, 1};
     scene.meshes[0].material.specular = {1, 1, 1, 1};
     scene.meshes[0].material.fillMode = FillMode::Solid;
-    scene.meshes[0].material.shader = ShaderManager::get(0);
+    scene.meshes[0].material.shader = ShaderManager::get(2);
+    scene.meshes[0].material.textures.push_back(TextureGenerator(256, 256).checkerBoard(0, 32, {1, 1, 1, 0.9}, {0, 0.3, 0.1, 0.9}).roll(0, 0, 32).getTexture(0));
 
     scene.meshes[2].material.ambient = {0.2, 0.2, 0.2, 1};
     scene.meshes[2].material.diffuse = {0.5, 0.4, 0.8, 1};
     scene.meshes[2].material.specular = {1, 1, 1, 1};
     scene.meshes[2].material.fillMode = FillMode::Solid;
-    scene.meshes[2].material.shader = ShaderManager::get(0);
+    scene.meshes[2].material.shader = ShaderManager::get(1);
+    scene.meshes[2].material.isOpaque = true;
+    scene.meshes[2].material.shouldWriteToDepthBuffer = true;
+    scene.meshes[2].material.shouldTestDepthBuffer = true;
+    scene.meshes[2].material.blendingSourceConstant = BlendingConstant::ONE;
+    scene.meshes[2].material.blendingDestinationConstant = BlendingConstant::ONE;
+    scene.meshes[2].material.textures.push_back(TextureGenerator(256, 256).checkerBoard(0, 32, {1, 1, 1, 0.9}, {0, 0.3, 0.1, 0.9}).roll(0, 0, 32).getTexture(0));
 
     scene.meshes[1].material.ambient = {0.2, 0.2, 0.2, 1};
     scene.meshes[1].material.diffuse = {0.6, 0.4, 0.6, 1};
     scene.meshes[1].material.specular = {1, 1, 1, 1};
     scene.meshes[1].material.fillMode = FillMode::Solid;
-    scene.meshes[1].material.texture = TextureGenerator(256, 256).checkerBoard(0, 32, {1, 1, 1, 0.9}, {0, 0.3, 0.1, 0.9}).roll(0, 0, 32).getTexture(0);
-    scene.meshes[1].material.shader = ShaderManager::get(0);
+    // scene.meshes[1].material.textures.push_back(TextureGenerator(256, 256).checkerBoard(0, 32, {1, 1, 1, 0.9}, {0, 0.3, 0.1, 0.9}).roll(0, 0, 32).getTexture(0));
+    scene.meshes[1].material.textures.push_back(TextureGenerator(256, 256).checkerBoard(0, 32, {1, 1, 1, 0.9}, {0, 0.3, 0.1, 0.9}).roll(0, 0, 0).getTexture(0));
+    scene.meshes[1].material.textures.push_back(TextureGenerator(256, 256).envMap(0, 10).getTexture(0));
+    scene.meshes[1].material.shader = ShaderManager::get(2);
+    // scene.meshes[1].material.isOpaque = false;
+    // scene.meshes[1].material.shouldWriteToDepthBuffer = false;
+    // scene.meshes[1].material.shouldTestDepthBuffer = false;
+    // scene.meshes[1].material.blendingSourceConstant = BlendingConstant::ONE;
+    // scene.meshes[1].material.blendingDestinationConstant = BlendingConstant::ONE;
+
 
     setupCubePositionsAndRotations();
 
@@ -63,12 +81,7 @@ void CubeScene::render() {
     glClearColor(0.05f, 0.0f, 0.1f, 0.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Move the camera backwards so we can see more
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glTranslatef(0.0f, 0.0f, -5.5f);
-
-    renderer.render(scene);
+    renderer.render(scene, camera);
 }
 
 void CubeScene::setupCubePositionsAndRotations() {

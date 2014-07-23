@@ -44,6 +44,35 @@ TextureGenerator& TextureGenerator::checkerBoard(unsigned char layer,
 }
 
 
+TextureGenerator& TextureGenerator::envMap(unsigned char layer, unsigned char size) {
+    unsigned char* input = layers[layer];
+
+    Colour col = {1, 1, 1, 1};
+
+    int sizeSquared = size * size;
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            int rx = x - width/2;
+            int ry = y - height/2;
+            int rsquare = rx * rx + ry * ry;
+
+            if (rsquare <= sizeSquared) {
+                double a = 1.0 - (rsquare / static_cast<double>(sizeSquared));
+                col.r = col.g = col.b = a;
+                col.a = 1;
+                *(reinterpret_cast<uint32_t*>(input)) = col.asInt();
+            } else {
+                col.r = col.g = col.b = 0;
+                col.a = 1;
+                *(reinterpret_cast<uint32_t*>(input)) = col.asInt();
+            }
+            input += 4;
+        }
+    }
+
+    return *this;
+}
+
 TextureGenerator& TextureGenerator::roll(unsigned char layer, unsigned char x, unsigned char y) {
     unsigned char* input = layers[layer];
     unsigned char* output = new unsigned char[width * height * 4];
@@ -51,7 +80,7 @@ TextureGenerator& TextureGenerator::roll(unsigned char layer, unsigned char x, u
 
     for (int j = 0; j < height; j++) {
         for (int i = 0; i < width; i++) {
-        	int index = ((j + y) % height) * width + ((i + x) % width);
+            int index = ((j + y) % height) * width + ((i + x) % width);
             *outptr++ = input[index * 4 + 0];
             *outptr++ = input[index * 4 + 1];
             *outptr++ = input[index * 4 + 2];

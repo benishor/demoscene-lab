@@ -1,5 +1,6 @@
 set(HEADERS
    ${HEADERS}
+   ${CMAKE_CURRENT_SOURCE_DIR}/Camera.h
    ${CMAKE_CURRENT_SOURCE_DIR}/Colour.h
    ${CMAKE_CURRENT_SOURCE_DIR}/GLheaders.h
    ${CMAKE_CURRENT_SOURCE_DIR}/Mesh.h
@@ -22,6 +23,7 @@ set(HEADERS
 )
 set(SOURCE
    ${SOURCE}
+   ${CMAKE_CURRENT_SOURCE_DIR}/Camera.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/CubeScene.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/others/Debugging.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/Material.cpp
