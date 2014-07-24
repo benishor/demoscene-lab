@@ -6,6 +6,8 @@
 
 using namespace glm;
 
+static vec3 rotationAxis[3];
+
 CubeScene::CubeScene() {
     // for (int i = 0; i < 2; i++)
     //     scene.meshes.push_back(MeshBuilder::cube());
@@ -19,6 +21,8 @@ CubeScene::CubeScene() {
     scene.meshes.push_back(MeshBuilder::sphere(50, 50));
     scene.meshes.push_back(MeshBuilder::cube());
 
+
+    scene.meshes[0].scale = vec3(2);
     scene.meshes[0].material.ambient = vec4(0.2, 0.2, 0.2, 1);
     scene.meshes[0].material.diffuse = vec4(1, 0, 0, 1);
     scene.meshes[0].material.specular = vec4(1, 1, 1, 1);
@@ -32,9 +36,10 @@ CubeScene::CubeScene() {
         .getTexture(0)
     );
 
+    scene.meshes[2].scale = vec3(2);
     scene.meshes[2].material.ambient = vec4(0.2, 0.2, 0.2, 1);
     scene.meshes[2].material.diffuse = vec4(0.5, 0.4, 0.8, 1);
-    scene.meshes[2].material.specular = vec4(1, 1, 1, 1);
+    scene.meshes[2].material.specular = vec4(1, 0, 0, 1);
     scene.meshes[2].material.fillMode = FillMode::Solid;
     scene.meshes[2].material.shader = ShaderManager::get(0);
     scene.meshes[2].material.isOpaque = false;
@@ -90,8 +95,12 @@ float lightIntensityForCurrentTime(double elapsedTimeInSeconds) {
 }
 
 void CubeScene::update(double secondsSinceLastUpdate) {
-    for (auto& mesh : scene.meshes)
-        mesh.rotationAngle += 30 * secondsSinceLastUpdate;
+    int i = 0;
+    for (auto& mesh : scene.meshes) {
+        mesh.rotation *= angleAxis(static_cast<float>(1 * secondsSinceLastUpdate), rotationAxis[i]);
+        mesh.computeModelToWorldMatrix();
+        i++;
+    }
 
     scene.pointLights[0].intensity = lightIntensityForCurrentTime(elapsedTimeInSeconds);
     elapsedTimeInSeconds += secondsSinceLastUpdate;
@@ -109,13 +118,11 @@ void CubeScene::setupCubePositionsAndRotations() {
     int i = 0;
     for (auto& mesh : scene.meshes) {
         mesh.position = vec3(static_cast<float>(i * 2.5 - 2.5), 0, 0);
-        mesh.rotationAxis = vec3(
+        rotationAxis[i] = vec3(
                                 randomizer.randomUnitDouble(),
                                 randomizer.randomUnitDouble(),
                                 randomizer.randomUnitDouble()
                             );
-        mesh.rotationAngle = randomizer.randomUnitDouble() * 360;
-
         i++;
     }
 }

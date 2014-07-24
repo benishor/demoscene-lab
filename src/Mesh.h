@@ -6,16 +6,21 @@
 #define GLM_FORCE_RADIANS
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/quaternion.hpp>
+
+using namespace glm;
+using namespace std;
 
 struct Vertex {
-    glm::vec3 position;
-    glm::vec3 normal;
+    vec3 position;
+    vec3 normal;
 };
 
 struct Facet {
     int a, b, c;
-    glm::vec3 normal;
-    glm::vec2 textCoords[3];
+    vec3 normal;
+    vec2 textCoords[3];
 };
 
 struct Edge {
@@ -23,18 +28,20 @@ struct Edge {
     int to;
 };
 
-class Mesh {
-public:
+struct Mesh {
 
     void calculateNormals();
+    void computeModelToWorldMatrix();
 
-    glm::vec3 position;
-    glm::vec3 rotationAxis;
-    double rotationAngle = 0;
+    vec3 position = vec3(0);
+    vec3 scale = vec3(1);
+    quat rotation;
 
-    std::vector<Vertex> vertices;
-    std::vector<Facet> facets;
-    std::vector<Edge> edges;
+    mat4 modelToWorldMatrix = mat4(1);
+
+    vector<Vertex> vertices;
+    vector<Facet> facets;
+    vector<Edge> edges;
 
     Material material;
 };

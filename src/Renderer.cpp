@@ -68,12 +68,6 @@ void disableLight(int lightIndex) {
     glDisable(GL_LIGHT0 + lightIndex);
 }
 
-void applyTransformation(const Mesh& mesh) {
-    glTranslatef(mesh.position.x, mesh.position.y, mesh.position.z);
-    glRotated(mesh.rotationAngle, mesh.rotationAxis.x, mesh.rotationAxis.y, mesh.rotationAxis.z);
-}
-
-
 void Renderer::render(const Scene& scene, Camera& camera) {
     camera.set();
 
@@ -85,7 +79,7 @@ void Renderer::render(const Scene& scene, Camera& camera) {
 
     for (auto& mesh : scene.meshes) {
         glPushMatrix();
-        applyTransformation(mesh);
+        glMultMatrixf(&mesh.modelToWorldMatrix[0][0]);
         renderMesh(mesh);
         glPopMatrix();
     }
