@@ -18,7 +18,12 @@ struct Vertex {
 };
 
 struct Facet {
-    int a, b, c;
+    union {
+        struct {
+            int a, b, c;
+        };
+        int vertices[3];
+    };
     vec3 normal;
     vec2 textCoords[3];
 };
@@ -28,10 +33,16 @@ struct Edge {
     int to;
 };
 
-struct Mesh {
+class Mesh {
+public:
+
+    Mesh();
+    virtual ~Mesh();
 
     void calculateNormals();
     void computeModelToWorldMatrix();
+
+    void draw();
 
     vec3 position = vec3(0);
     vec3 scale = vec3(1);
@@ -44,4 +55,8 @@ struct Mesh {
     vector<Edge> edges;
 
     Material material;
+
+private:
+    GLuint vboId = 0; // not initialized
+    float* vboData = nullptr;
 };

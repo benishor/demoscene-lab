@@ -90,14 +90,18 @@ CubeScene::CubeScene() {
 }
 
 float lightIntensityForCurrentTime(double elapsedTimeInSeconds) {
-    // return fabs(sin((elapsedTimeInSeconds / 5.0) * 3.1415926 * 2));
-    return 1;
+    return fabs(sin((elapsedTimeInSeconds / 5.0) * 3.1415926 * 2));
+    // return 1;
 }
 
 void CubeScene::update(double secondsSinceLastUpdate) {
     int i = 0;
     for (auto& mesh : scene.meshes) {
         mesh.rotation *= angleAxis(static_cast<float>(1 * secondsSinceLastUpdate), rotationAxis[i]);
+        float scl = lightIntensityForCurrentTime(elapsedTimeInSeconds * (i + 1));
+        if (scl < 0.3)
+            scl = 0.3;
+        mesh.position = vec3(scl);
         mesh.computeModelToWorldMatrix();
         i++;
     }

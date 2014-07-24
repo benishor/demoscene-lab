@@ -1,9 +1,13 @@
-- vertex buffers
+DONE - vertex buffers
 - full shader architecture
+- more primitives
 DONE - own transforms
 - render to texture
 - particle engine
 - json to byte array serializer + scene loader from byte array
+- god rays
+- marching cubes
+- tunnels
 
 Questions:
 - should fov + near/far clip planes be part of cameras? if so, how will cams get to know about aspect ratio?

@@ -13,30 +13,12 @@ void renderWireframe(const Mesh& mesh) {
     glEnd();
 }
 
-void renderSolid(const Mesh& mesh) {
+void renderSolid(Mesh& mesh) {
     mesh.material.use();
-
-    glBegin(GL_TRIANGLES);
-    for (auto& f : mesh.facets) {
-        // glNormal3d(f.normal.x, f.normal.y, f.normal.z);
-        glTexCoord2d(f.textCoords[0].x, f.textCoords[0].y);
-        glNormal3d(mesh.vertices[f.a].normal.x, mesh.vertices[f.a].normal.y, mesh.vertices[f.a].normal.z);
-        glVertex3d(mesh.vertices[f.a].position.x, mesh.vertices[f.a].position.y, mesh.vertices[f.a].position.z);
-
-        // glNormal3d(f.normal.x, f.normal.y, f.normal.z);
-        glTexCoord2d(f.textCoords[1].x, f.textCoords[1].y);
-        glNormal3d(mesh.vertices[f.b].normal.x, mesh.vertices[f.b].normal.y, mesh.vertices[f.b].normal.z);
-        glVertex3d(mesh.vertices[f.b].position.x, mesh.vertices[f.b].position.y, mesh.vertices[f.b].position.z);
-
-        // glNormal3d(f.normal.x, f.normal.y, f.normal.z);
-        glTexCoord2d(f.textCoords[2].x, f.textCoords[2].y);
-        glNormal3d(mesh.vertices[f.c].normal.x, mesh.vertices[f.c].normal.y, mesh.vertices[f.c].normal.z);
-        glVertex3d(mesh.vertices[f.c].position.x, mesh.vertices[f.c].position.y, mesh.vertices[f.c].position.z);
-    }
-    glEnd();
+    mesh.draw();
 }
 
-void renderMesh(const Mesh& mesh) {
+void renderMesh(Mesh& mesh) {
     switch (mesh.material.fillMode) {
         case FillMode::Wireframe:
             renderWireframe(mesh);
@@ -80,7 +62,7 @@ void Renderer::render(const Scene& scene, Camera& camera) {
     for (auto& mesh : scene.meshes) {
         glPushMatrix();
         glMultMatrixf(&mesh.modelToWorldMatrix[0][0]);
-        renderMesh(mesh);
+        renderMesh(const_cast<Mesh&>(mesh));
         glPopMatrix();
     }
 
