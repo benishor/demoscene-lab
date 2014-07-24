@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Vector3.h>
 #include <Colour.h>
+#include <glm/vec3.hpp>
 
 struct PointLight {
-    Vector3 position;
+    glm::vec3 position;
     float intensity = 1.0;
     Colour ambient;
     Colour diffuse;

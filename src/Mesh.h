@@ -1,23 +1,21 @@
 #pragma once
 
 #include <vector>
-#include <Vector3.h>
 #include <Material.h>
 
-struct Vertex {
-    Vector3 position;
-    Vector3 normal;
-};
+#define GLM_FORCE_RADIANS
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
-struct UV {
-    double u;
-    double v;
+struct Vertex {
+    glm::vec3 position;
+    glm::vec3 normal;
 };
 
 struct Facet {
     int a, b, c;
-    Vector3 normal;
-    UV textCoords[3];
+    glm::vec3 normal;
+    glm::vec2 textCoords[3];
 };
 
 struct Edge {
@@ -30,8 +28,8 @@ public:
 
     void calculateNormals();
 
-    Vector3 position;
-    Vector3 rotationAxis;
+    glm::vec3 position;
+    glm::vec3 rotationAxis;
     double rotationAngle = 0;
 
     std::vector<Vertex> vertices;

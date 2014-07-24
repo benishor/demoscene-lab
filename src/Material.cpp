@@ -16,9 +16,9 @@ GLenum toGL(const BlendingConstant& c) {
 }
 
 void Material::use() const {
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient.array);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse.array);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular.array);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, &ambient[0]);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, &diffuse[0]);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, &specular[0]);
     glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
 
     if (isFlatShaded)

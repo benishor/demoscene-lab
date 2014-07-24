@@ -4,12 +4,14 @@
 #include <TextureGenerator.h>
 #include <ShaderManager.h>
 
+using namespace glm;
+
 CubeScene::CubeScene() {
     // for (int i = 0; i < 2; i++)
     //     scene.meshes.push_back(MeshBuilder::cube());
 
-    camera.position = glm::vec3(0, 3, 3);
-    camera.target = {0, 0, 0};
+    camera.position = vec3(0, 0, 2.5);
+    camera.target = vec3(0, 0, 0);
 
     ShaderManager::init();
 
@@ -17,33 +19,52 @@ CubeScene::CubeScene() {
     scene.meshes.push_back(MeshBuilder::sphere(50, 50));
     scene.meshes.push_back(MeshBuilder::cube());
 
-    scene.meshes[0].material.ambient = {0.2, 0.2, 0.2, 1};
-    scene.meshes[0].material.diffuse = {1, 0, 0, 1};
-    scene.meshes[0].material.specular = {1, 1, 1, 1};
+    scene.meshes[0].material.ambient = vec4(0.2, 0.2, 0.2, 1);
+    scene.meshes[0].material.diffuse = vec4(1, 0, 0, 1);
+    scene.meshes[0].material.specular = vec4(1, 1, 1, 1);
+    scene.meshes[0].material.shininess = 2;
     scene.meshes[0].material.fillMode = FillMode::Solid;
-    scene.meshes[0].material.shader = ShaderManager::get(2);
-    scene.meshes[0].material.textures.push_back(TextureGenerator(256, 256).checkerBoard(0, 32, {1, 1, 1, 0.9}, {0, 0.3, 0.1, 0.9}).roll(0, 0, 32).getTexture(0));
+    scene.meshes[0].material.shader = ShaderManager::get(0);
+    scene.meshes[0].material.textures.push_back(
+        TextureGenerator(256, 256)
+        .checkerBoard(0, 8, vec4(1, 1, 1, 0.9), vec4(0, 0.3, 0.1, 0.9))
+        .roll(0, 4, 4)
+        .getTexture(0)
+    );
 
-    scene.meshes[2].material.ambient = {0.2, 0.2, 0.2, 1};
-    scene.meshes[2].material.diffuse = {0.5, 0.4, 0.8, 1};
-    scene.meshes[2].material.specular = {1, 1, 1, 1};
+    scene.meshes[2].material.ambient = vec4(0.2, 0.2, 0.2, 1);
+    scene.meshes[2].material.diffuse = vec4(0.5, 0.4, 0.8, 1);
+    scene.meshes[2].material.specular = vec4(1, 1, 1, 1);
     scene.meshes[2].material.fillMode = FillMode::Solid;
-    scene.meshes[2].material.shader = ShaderManager::get(1);
-    scene.meshes[2].material.isOpaque = true;
+    scene.meshes[2].material.shader = ShaderManager::get(0);
+    scene.meshes[2].material.isOpaque = false;
     scene.meshes[2].material.shouldWriteToDepthBuffer = true;
     scene.meshes[2].material.shouldTestDepthBuffer = true;
-    scene.meshes[2].material.blendingSourceConstant = BlendingConstant::ONE;
+    scene.meshes[2].material.blendingSourceConstant = BlendingConstant::SRC_COLOR;
     scene.meshes[2].material.blendingDestinationConstant = BlendingConstant::ONE;
-    scene.meshes[2].material.textures.push_back(TextureGenerator(256, 256).checkerBoard(0, 32, {1, 1, 1, 0.9}, {0, 0.3, 0.1, 0.9}).roll(0, 0, 32).getTexture(0));
+    scene.meshes[2].material.textures.push_back(
+        TextureGenerator(256, 256)
+        .envMap(0, 100)
+        .getTexture(0)
+    );
 
-    scene.meshes[1].material.ambient = {0.2, 0.2, 0.2, 1};
-    scene.meshes[1].material.diffuse = {0.6, 0.4, 0.6, 1};
-    scene.meshes[1].material.specular = {1, 1, 1, 1};
+    scene.meshes[1].material.ambient = vec4(0.2, 0.2, 0.2, 1);
+    scene.meshes[1].material.diffuse = vec4(0.6, 0.4, 0.6, 1);
+    scene.meshes[1].material.specular = vec4(1, 1, 1, 1);
     scene.meshes[1].material.fillMode = FillMode::Solid;
-    // scene.meshes[1].material.textures.push_back(TextureGenerator(256, 256).checkerBoard(0, 32, {1, 1, 1, 0.9}, {0, 0.3, 0.1, 0.9}).roll(0, 0, 32).getTexture(0));
-    scene.meshes[1].material.textures.push_back(TextureGenerator(256, 256).checkerBoard(0, 32, {1, 1, 1, 0.9}, {0, 0.3, 0.1, 0.9}).roll(0, 0, 0).getTexture(0));
-    scene.meshes[1].material.textures.push_back(TextureGenerator(256, 256).envMap(0, 10).getTexture(0));
-    scene.meshes[1].material.shader = ShaderManager::get(2);
+    //)scene.meshes[1].material.textures.push_back(TextureGenerator(256, 256).checkerBoard(0, 32, vec4(1, 1, 1, 0.9}, )ec4(0, 0.3, 0.1, 0.9}).)oll(0, 0, 32).getTexture(0));
+    scene.meshes[1].material.textures.push_back(
+        TextureGenerator(256, 256)
+        .checkerBoard(0, 16, vec4(1, 1, 1, 0.9), vec4(0, 0.3, 0.1, 0.9))
+        .roll(0, 8, 8)
+        .getTexture(0)
+    );
+    // scene.meshes[1].material.textures.push_back(
+    //     TextureGenerator(256, 256)
+    //     .envMap(0, 10)
+    //     .getTexture(0)
+    // );
+    scene.meshes[1].material.shader = ShaderManager::get(0);
     // scene.meshes[1].material.isOpaque = false;
     // scene.meshes[1].material.shouldWriteToDepthBuffer = false;
     // scene.meshes[1].material.shouldTestDepthBuffer = false;
@@ -55,10 +76,10 @@ CubeScene::CubeScene() {
 
     // Create a point light
     PointLight light;
-    light.position = {0, 0, 4};
-    light.ambient = {0.2, 0.2, 0.2, 1};
-    light.diffuse = {0.8, 0.8, 0.8, 1};
-    light.specular = {1, 1, 1, 1};
+    light.position = vec3(0, 0, 4);
+    light.ambient = vec4(0.2, 0.2, 0.2, 1);
+    light.diffuse = vec4(0.8, 0.8, 0.8, 1);
+    light.specular = vec4(1, 1, 1, 1);
 
     scene.pointLights.push_back(light);
 }
@@ -87,13 +108,12 @@ void CubeScene::render() {
 void CubeScene::setupCubePositionsAndRotations() {
     int i = 0;
     for (auto& mesh : scene.meshes) {
-        mesh.position = {static_cast<double>(i * 3 - 3), 0, 0};
-        mesh.rotationAxis = {
-            randomizer.randomUnitDouble(),
-            randomizer.randomUnitDouble(),
-            randomizer.randomUnitDouble()
-            // 1, 1, 0
-        };
+        mesh.position = vec3(static_cast<float>(i * 2.5 - 2.5), 0, 0);
+        mesh.rotationAxis = vec3(
+                                randomizer.randomUnitDouble(),
+                                randomizer.randomUnitDouble(),
+                                randomizer.randomUnitDouble()
+                            );
         mesh.rotationAngle = randomizer.randomUnitDouble() * 360;
 
         i++;

@@ -1,13 +1,14 @@
 #include <Mesh.h>
+#include <glm/glm.hpp>
 
 void Mesh::calculateNormals() {
 	for (auto& vertex : vertices)
-		vertex.normal.zero();
+		vertex.normal = glm::vec3(0);
 
 	for (auto& facet : facets) {
-		Vector3 a = vertices[facet.b].position - vertices[facet.a].position;
-		Vector3 b = vertices[facet.c].position - vertices[facet.a].position;
-		facet.normal = normalize(cross(a, b));
+		glm::vec3 a = vertices[facet.b].position - vertices[facet.a].position;
+		glm::vec3 b = vertices[facet.c].position - vertices[facet.a].position;
+		facet.normal = glm::normalize(glm::cross(a, b));
 
 		vertices[facet.a].normal += facet.normal;
 		vertices[facet.b].normal += facet.normal;
@@ -15,6 +16,6 @@ void Mesh::calculateNormals() {
 	}
 
 	for (auto& vertex : vertices)
-		vertex.normal = normalize(vertex.normal);
+		vertex.normal = glm::normalize(vertex.normal);
 }
 

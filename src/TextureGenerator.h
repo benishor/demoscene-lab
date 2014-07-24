@@ -16,7 +16,7 @@ public:
     TextureGenerator& envMap(unsigned char layer, unsigned char size);
 
     TextureGenerator& roll(unsigned char layer, unsigned char x, unsigned char y);
-    TextureGenerator& polarGrid(unsigned char layer);
+    // TextureGenerator& polarGrid(unsigned char layer);
 
     unsigned char* get(unsigned char layer);
     std::shared_ptr<Texture> getTexture(unsigned char layer);

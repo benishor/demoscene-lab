@@ -19,17 +19,17 @@ void renderSolid(const Mesh& mesh) {
     glBegin(GL_TRIANGLES);
     for (auto& f : mesh.facets) {
         // glNormal3d(f.normal.x, f.normal.y, f.normal.z);
-        glTexCoord2d(f.textCoords[0].u, f.textCoords[0].v);
+        glTexCoord2d(f.textCoords[0].x, f.textCoords[0].y);
         glNormal3d(mesh.vertices[f.a].normal.x, mesh.vertices[f.a].normal.y, mesh.vertices[f.a].normal.z);
         glVertex3d(mesh.vertices[f.a].position.x, mesh.vertices[f.a].position.y, mesh.vertices[f.a].position.z);
 
         // glNormal3d(f.normal.x, f.normal.y, f.normal.z);
-        glTexCoord2d(f.textCoords[1].u, f.textCoords[1].v);
+        glTexCoord2d(f.textCoords[1].x, f.textCoords[1].y);
         glNormal3d(mesh.vertices[f.b].normal.x, mesh.vertices[f.b].normal.y, mesh.vertices[f.b].normal.z);
         glVertex3d(mesh.vertices[f.b].position.x, mesh.vertices[f.b].position.y, mesh.vertices[f.b].position.z);
 
         // glNormal3d(f.normal.x, f.normal.y, f.normal.z);
-        glTexCoord2d(f.textCoords[2].u, f.textCoords[2].v);
+        glTexCoord2d(f.textCoords[2].x, f.textCoords[2].y);
         glNormal3d(mesh.vertices[f.c].normal.x, mesh.vertices[f.c].normal.y, mesh.vertices[f.c].normal.z);
         glVertex3d(mesh.vertices[f.c].position.x, mesh.vertices[f.c].position.y, mesh.vertices[f.c].position.z);
     }
@@ -52,9 +52,9 @@ void renderMesh(const Mesh& mesh) {
 
 void setupLight(const PointLight& light, int lightIndex) {
     glEnable(GL_LIGHT0 + lightIndex);
-    glLightfv(GL_LIGHT0 + lightIndex, GL_AMBIENT, (light.ambient * light.intensity).array);
-    glLightfv(GL_LIGHT0 + lightIndex, GL_DIFFUSE, (light.diffuse * light.intensity).array);
-    glLightfv(GL_LIGHT0 + lightIndex, GL_SPECULAR, (light.specular * light.intensity).array);
+    glLightfv(GL_LIGHT0 + lightIndex, GL_AMBIENT, &(light.ambient * light.intensity)[0]);
+    glLightfv(GL_LIGHT0 + lightIndex, GL_DIFFUSE, &(light.diffuse * light.intensity)[0]);
+    glLightfv(GL_LIGHT0 + lightIndex, GL_SPECULAR, &(light.specular * light.intensity)[0]);
 
     glLightfv(GL_LIGHT0 + lightIndex, GL_POSITION, new GLfloat[4] {
         static_cast<GLfloat>(light.position.x),
