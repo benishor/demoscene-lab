@@ -14,6 +14,7 @@ public:
                                    Colour off);
 
     TextureGenerator& envMap(unsigned char layer, unsigned char size);
+    TextureGenerator& lens(unsigned char layer, unsigned char size);
 
     TextureGenerator& roll(unsigned char layer, unsigned char x, unsigned char y);
     // TextureGenerator& polarGrid(unsigned char layer);

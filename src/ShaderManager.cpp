@@ -99,6 +99,23 @@ void main (void)
 }
 )";
 
+const char* vsParticles = R"(
+    void main() {   
+        gl_Position = ftransform();     
+        gl_TexCoord[0] = gl_MultiTexCoord0;
+        gl_FrontColor = gl_Color;
+    } 
+)";
+
+const char* psParticles = R"(
+    uniform sampler2D colorMap;
+
+    void main (void) {
+        gl_FragColor = texture2D(colorMap, gl_TexCoord[0].st) * gl_Color;
+    }
+)";
+
+
 // const char* vsEnvMap = R"(
 //     void main()
 //     {   
@@ -132,6 +149,7 @@ void main (void)
 // )";
 
 	shaders.push_back(std::shared_ptr<Shader>(new Shader(vsPhong, psPhong)));	
+    shaders.push_back(std::shared_ptr<Shader>(new Shader(vsParticles, psParticles)));   
 	// shaders.push_back(std::shared_ptr<Shader>(new Shader(vs, ps)));	
  //    shaders.push_back(std::shared_ptr<Shader>(new Shader(vsEnvMap, psEnvMap))); 
 }

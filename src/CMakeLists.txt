@@ -12,6 +12,7 @@ set(HEADERS
    ${CMAKE_CURRENT_SOURCE_DIR}/Window.h
    ${CMAKE_CURRENT_SOURCE_DIR}/others/Debugging.h
    ${CMAKE_CURRENT_SOURCE_DIR}/MeshBuilder.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/Particle.h
    ${CMAKE_CURRENT_SOURCE_DIR}/Randomizer.h
    ${CMAKE_CURRENT_SOURCE_DIR}/Shader.h
    ${CMAKE_CURRENT_SOURCE_DIR}/ShaderManager.h
@@ -28,6 +29,7 @@ set(SOURCE
    ${CMAKE_CURRENT_SOURCE_DIR}/Material.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/MeshBuilder.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/Mesh.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/Particle.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/Randomizer.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/Renderer.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/Shader.cpp

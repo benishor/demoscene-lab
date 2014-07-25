@@ -80,4 +80,7 @@ void Material::unuse() const {
 
     if (shader)
         shader->unuse();
+
+    if (!shouldWriteToDepthBuffer)
+        glDepthMask(GL_TRUE);
 }

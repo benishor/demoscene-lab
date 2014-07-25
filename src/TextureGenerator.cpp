@@ -3,6 +3,7 @@
 #include <cstring>
 
 using namespace std;
+using namespace glm;
 
 TextureGenerator::TextureGenerator(int w, int h)
     : width(w), height(h) {
@@ -59,10 +60,10 @@ TextureGenerator& TextureGenerator::envMap(unsigned char layer, unsigned char si
             if (rsquare <= sizeSquared) {
                 double a = 1.0 - (rsquare / static_cast<double>(sizeSquared));
                 col.r = col.g = col.b = a;
-                col.a = 1;
+                // col.a = 1;
             } else {
                 col.r = col.g = col.b = 0;
-                col.a = 1;
+                // col.a = 1;
             }
 
             *input++ = asInt(col);
@@ -71,6 +72,39 @@ TextureGenerator& TextureGenerator::envMap(unsigned char layer, unsigned char si
 
     return *this;
 }
+
+
+TextureGenerator& TextureGenerator::lens(unsigned char layer, unsigned char size) {
+    uint32_t* input = reinterpret_cast<uint32_t*>(layers[layer]);
+
+    Colour col = vec4(col);
+
+    int sizeSquared = size * size;
+    double c;
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            int rx = x - width / 2;
+            int ry = y - height / 2;
+            int rsquare = rx * rx + ry * ry;
+
+            if (rsquare <= sizeSquared) {
+                double r = sqrt(rsquare) / static_cast<double>(size);
+                c = 1 - r;
+                c = c * c;
+                if (r > 1)
+                    c = 0;
+                col = vec4(c);
+            } else {
+                col = vec4(0);
+            }
+
+            *input++ = asInt(col);
+        }
+    }
+
+    return *this;
+}
+
 
 TextureGenerator& TextureGenerator::roll(unsigned char layer, unsigned char x, unsigned char y) {
     unsigned char* input = layers[layer];

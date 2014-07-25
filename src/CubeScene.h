@@ -3,6 +3,7 @@
 #include <Renderer.h>
 #include <Randomizer.h>
 #include <Camera.h>
+#include <Particle.h>
 
 class CubeScene {
 public:
@@ -19,5 +20,7 @@ private:
     Renderer renderer;
     Randomizer randomizer;
     Camera camera;
+    ParticleSystem particleSystem;
+    ParticleEmitter particleEmitter = ParticleEmitter(particleSystem);
     double elapsedTimeInSeconds = 0;
 };

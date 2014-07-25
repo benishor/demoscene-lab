@@ -1,3 +1,4 @@
+
 #include <CubeScene.h>
 #include <MeshBuilder.h>
 #include <GLheaders.h>
@@ -42,7 +43,7 @@ CubeScene::CubeScene() {
     scene.meshes[2].material.specular = vec4(1, 0, 0, 1);
     scene.meshes[2].material.fillMode = FillMode::Solid;
     scene.meshes[2].material.shader = ShaderManager::get(0);
-    scene.meshes[2].material.isOpaque = false;
+    scene.meshes[2].material.isOpaque = true;
     scene.meshes[2].material.shouldWriteToDepthBuffer = true;
     scene.meshes[2].material.shouldTestDepthBuffer = true;
     scene.meshes[2].material.blendingSourceConstant = BlendingConstant::SRC_COLOR;
@@ -87,6 +88,8 @@ CubeScene::CubeScene() {
     light.specular = vec4(1, 1, 1, 1);
 
     scene.pointLights.push_back(light);
+
+    particleEmitter.position = vec3(0, 0, 0);
 }
 
 float lightIntensityForCurrentTime(double elapsedTimeInSeconds) {
@@ -107,6 +110,10 @@ void CubeScene::update(double secondsSinceLastUpdate) {
     }
 
     scene.pointLights[0].intensity = lightIntensityForCurrentTime(elapsedTimeInSeconds);
+
+    particleSystem.update(secondsSinceLastUpdate);
+    particleEmitter.update(secondsSinceLastUpdate);
+
     elapsedTimeInSeconds += secondsSinceLastUpdate;
 }
 
@@ -115,7 +122,10 @@ void CubeScene::render() {
     glClearColor(0.05f, 0.0f, 0.1f, 0.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    renderer.render(scene, camera);
+    camera.set();
+    particleSystem.render();
+
+    // renderer.render(scene, camera);
 }
 
 void CubeScene::setupCubePositionsAndRotations() {
@@ -123,10 +133,10 @@ void CubeScene::setupCubePositionsAndRotations() {
     for (auto& mesh : scene.meshes) {
         mesh.position = vec3(static_cast<float>(i * 2.5 - 2.5), 0, 0);
         rotationAxis[i] = vec3(
-                                randomizer.randomUnitDouble(),
-                                randomizer.randomUnitDouble(),
-                                randomizer.randomUnitDouble()
-                            );
+                              randomizer.randomUnitDouble(),
+                              randomizer.randomUnitDouble(),
+                              randomizer.randomUnitDouble()
+                          );
         i++;
     }
 }

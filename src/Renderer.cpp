@@ -16,6 +16,7 @@ void renderWireframe(const Mesh& mesh) {
 void renderSolid(Mesh& mesh) {
     mesh.material.use();
     mesh.draw();
+    mesh.material.unuse();
 }
 
 void renderMesh(Mesh& mesh) {

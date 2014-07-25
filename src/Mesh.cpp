@@ -71,10 +71,11 @@ void Mesh::draw() {
 
         glGenBuffers(1, &vboId);
         glBindBuffer(GL_ARRAY_BUFFER, vboId);
-        glBufferData(GL_ARRAY_BUFFER, sizeOfVertexInBytes() * facets.size() * 3, vboData, GL_STREAM_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeOfVertexInBytes() * facets.size() * 3, vboData, GL_DYNAMIC_DRAW);
+    } else {
+        glBindBuffer(GL_ARRAY_BUFFER, vboId);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeOfVertexInBytes() * facets.size() * 3, vboData);
     }
-
-    glBindBuffer(GL_ARRAY_BUFFER, vboId);
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
