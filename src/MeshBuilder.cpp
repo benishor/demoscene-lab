@@ -15,9 +15,9 @@ void addVertex(Mesh& m, float x, float y, float z) {
 void addFacet(Mesh& m, int a, int b, int c, float u1, float v1, float u2, float v2, float u3, float v3, bool edge1Visible, bool edge2Visible, bool edge3Visible) {
     Facet f;
     f.a = a; f.b = b; f.c = c;
-    f.textCoords[0] = vec2(u1, v1); 
-    f.textCoords[1] = vec2(u2, v2); 
-    f.textCoords[2] = vec2(u3, v3); 
+    f.textCoords[0] = vec2(u1, v1);
+    f.textCoords[1] = vec2(u2, v2);
+    f.textCoords[2] = vec2(u3, v3);
     m.facets.push_back(f);
 
     if (edge1Visible) m.edges.push_back({a, b});
@@ -57,10 +57,10 @@ Mesh MeshBuilder::sphere(int longitudePoints, int latitudePoints) {
                 int topVertexIndex = (j - 1) * longitudePoints + i;
                 int topNextVertexIndex = (j - 1) * longitudePoints + ((i + 1) % longitudePoints);
 
-                vec2 currentUV = vec2(i * du, (j + 2)* dv);
-                vec2 nextUV = vec2((i + 1)* du, (j + 2)* dv);
-                vec2 topUV = vec2(i * du, (j + 1)* dv);
-                vec2 topNextUV = vec2((i + 1)* du, (j + 1)* dv);
+                vec2 currentUV = vec2(i * du, (j + 2) * dv);
+                vec2 nextUV = vec2((i + 1) * du, (j + 2) * dv);
+                vec2 topUV = vec2(i * du, (j + 1) * dv);
+                vec2 topNextUV = vec2((i + 1) * du, (j + 1) * dv);
 
                 f.a = currentVertexIndex;
                 f.b = topVertexIndex;
@@ -105,8 +105,8 @@ Mesh MeshBuilder::sphere(int longitudePoints, int latitudePoints) {
         int nextVertexIndex = (currentVertexIndex + 1) % longitudePoints;
 
         vec2 currentUV = vec2(i * du, dv);
-        vec2 nextUV = vec2((i + 1)* du, dv);
-        vec2 topUV = vec2((i + 0.5)* du, 0);
+        vec2 nextUV = vec2((i + 1) * du, dv);
+        vec2 topUV = vec2((i + 0.5) * du, 0);
 
         f.textCoords[0] = currentUV;
         f.textCoords[1] = nextUV;
@@ -134,8 +134,8 @@ Mesh MeshBuilder::sphere(int longitudePoints, int latitudePoints) {
         int nextVertexIndex = (i + 1) % longitudePoints + (latitudePoints - 1) * longitudePoints;
 
         vec2 currentUV = vec2(i * du, 1.0 - dv);
-        vec2 nextUV = vec2((i + 1)* du, 1.0 - dv);
-        vec2 bottomUV = vec2((i + 0.5)* du, 1.0);
+        vec2 nextUV = vec2((i + 1) * du, 1.0 - dv);
+        vec2 bottomUV = vec2((i + 0.5) * du, 1.0);
 
         f.textCoords[0] = currentUV;
         f.textCoords[1] = bottomUV;
@@ -162,15 +162,15 @@ Mesh MeshBuilder::sphere(int longitudePoints, int latitudePoints) {
 Mesh MeshBuilder::cube() {
     Mesh result;
 
-    addVertex(result,-0.5, -0.5, -0.5);
+    addVertex(result, -0.5, -0.5, -0.5);
     addVertex(result, 0.5, -0.5, -0.5);
     addVertex(result, 0.5,  0.5, -0.5);
-    addVertex(result,-0.5,  0.5, -0.5);
+    addVertex(result, -0.5,  0.5, -0.5);
 
-    addVertex(result,-0.5, -0.5,  0.5);
+    addVertex(result, -0.5, -0.5,  0.5);
     addVertex(result, 0.5, -0.5,  0.5);
     addVertex(result, 0.5,  0.5,  0.5);
-    addVertex(result,-0.5,  0.5,  0.5);
+    addVertex(result, -0.5,  0.5,  0.5);
 
     // back
     addFacet(result, 0, 2, 1, 1, 0, 0, 1, 0, 0, false, true, true);
@@ -197,5 +197,43 @@ Mesh MeshBuilder::cube() {
     addFacet(result, 6, 3, 7, 0, 1, 1, 0, 1, 1, false, true, true);
 
     result.calculateNormals();
+    return result;
+}
+
+Mesh MeshBuilder::grid(int xSegments, int ySegments) {
+    Mesh result;
+    for (int y = 0; y < (ySegments + 1); y++) {
+        float yPos = (y / static_cast<float>(ySegments)) - 0.5f;
+        for (int x = 0; x < (xSegments + 1); x++) {
+            float xPos = (x / static_cast<float>(xSegments)) - 0.5f;
+            addVertex(result, xPos, yPos, 0);
+        }
+    }
+
+    for (int y = 0; y < ySegments; y++) {
+        for (int x = 0; x < xSegments; x++) {
+            int current = x + (y * (ySegments + 1));
+            int next = current + 1;
+            int bottom = next + xSegments;
+            int bottomNext = bottom + 1;
+            addFacet(result, current, bottom, next, 
+                result.vertices[current].position.x + 0.5, 
+                0.5 - result.vertices[current].position.y,
+                result.vertices[bottom].position.x + 0.5, 
+                0.5 - result.vertices[bottom].position.y,
+                result.vertices[next].position.x + 0.5, 
+                0.5 - result.vertices[next].position.y,
+                true, false, true );
+
+            addFacet(result, next, bottom, bottomNext, 
+                result.vertices[next].position.x + 0.5, 
+                0.5 - result.vertices[next].position.y,
+                result.vertices[bottom].position.x + 0.5, 
+                0.5 - result.vertices[bottom].position.y,
+                result.vertices[bottomNext].position.x + 0.5, 
+                0.5 - result.vertices[bottomNext].position.y,
+                false, true, true);
+        }
+    }
     return result;
 }

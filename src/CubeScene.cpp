@@ -18,9 +18,11 @@ CubeScene::CubeScene() {
 
     ShaderManager::init();
 
-    scene.meshes.push_back(MeshBuilder::cube());
+    scene.meshes.push_back(MeshBuilder::grid(10, 10));
+    // scene.meshes.push_back(MeshBuilder::cube());
     scene.meshes.push_back(MeshBuilder::sphere(50, 50));
-    scene.meshes.push_back(MeshBuilder::cube());
+    // scene.meshes.push_back(MeshBuilder::cube());
+    scene.meshes.push_back(MeshBuilder::grid(10, 10));
 
 
     scene.meshes[0].scale = vec3(2);
@@ -125,7 +127,7 @@ void CubeScene::render() {
     camera.set();
     particleSystem.render();
 
-    // renderer.render(scene, camera);
+    renderer.render(scene, camera);
 }
 
 void CubeScene::setupCubePositionsAndRotations() {

@@ -6,3 +6,4 @@ Possible optimizations
 - compress material flags into an int
 - shader based texture generator?
 - glsl minifier on shader sources, preprocess step that generates minified source
+- optimize mesh generation
