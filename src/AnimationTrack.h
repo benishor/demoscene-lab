@@ -33,6 +33,13 @@ struct Key {
         result->value.vec3Val = val;
         return result;
     }
+
+    static Key* floatKey(float t, float val) {
+        Key* result = new Key();
+        result->time = t;
+        result->value.floatVal = val;
+        return result;
+    }
 };
 
 class AnimationTrack {

@@ -9,6 +9,7 @@
 #include <CameraNode.h>
 #include <LightNode.h>
 #include <Vec3Track.h>
+#include <FloatTrack.h>
 
 namespace Acidrain {
 

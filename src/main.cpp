@@ -67,7 +67,7 @@ int main() {
     DemoPartScene demoPartScene;
     demoPartScene.startTime = 0;
     demoPartScene.endTime = 4;
-    demoPartScene.cameraName = "cam2";
+    demoPartScene.cameraName = "cam1";
 
     Scene* scene = new Scene();
     demoPartScene.scene = shared_ptr<Scene>(scene);
@@ -110,7 +110,8 @@ int main() {
     scene->tree->add(shared_ptr<SceneNode>(camNode2));
     scene->tree->add(shared_ptr<SceneNode>(lightNode));
 
-    shared_ptr<AnimationTrack> posTrack = shared_ptr<AnimationTrack>(new Vec3Track());
+    // Position Track
+    auto posTrack = shared_ptr<AnimationTrack>(new Vec3Track());
     scene->timeline->tracks.push_back(posTrack);
 
     posTrack->addControlledObject(&meshNode->position);
@@ -118,6 +119,24 @@ int main() {
     posTrack->addKey(Key::vec3Key(0.0, glm::vec3(0, 0, 0)));
     posTrack->addKey(Key::vec3Key(0.5, glm::vec3(0, 1, 0)));
     posTrack->addKey(Key::vec3Key(1.0, glm::vec3(0, 0, 0)));
+
+    // Scale track
+    auto scaleTrack = shared_ptr<AnimationTrack>(new FloatTrack());
+    scene->timeline->tracks.push_back(scaleTrack);
+
+    scaleTrack->addControlledObject(&meshNode->scale.x);
+    scaleTrack->addControlledObject(&meshNode->scale.y);
+    scaleTrack->addControlledObject(&meshNode->scale.z);
+
+    scaleTrack->addKey(Key::floatKey(0.00, 1));
+    scaleTrack->addKey(Key::floatKey(0.01, 2));
+    scaleTrack->addKey(Key::floatKey(0.25, 1));
+    scaleTrack->addKey(Key::floatKey(0.26, 2));
+    scaleTrack->addKey(Key::floatKey(0.50, 1));
+    scaleTrack->addKey(Key::floatKey(0.51, 2));
+    scaleTrack->addKey(Key::floatKey(0.75, 1));
+    scaleTrack->addKey(Key::floatKey(0.76, 2));
+    scaleTrack->addKey(Key::floatKey(1.00, 1));
 
     // --------------------------------------------------------------------------------------
     // Run demo

@@ -8,6 +8,7 @@ set(HEADERS
    ${CMAKE_CURRENT_SOURCE_DIR}/DemoPart.h
    ${CMAKE_CURRENT_SOURCE_DIR}/DemoPartClear.h
    ${CMAKE_CURRENT_SOURCE_DIR}/DemoPartScene.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/FloatTrack.h
    ${CMAKE_CURRENT_SOURCE_DIR}/GLheaders.h
    ${CMAKE_CURRENT_SOURCE_DIR}/GLMheaders.h
    ${CMAKE_CURRENT_SOURCE_DIR}/IntegerTrack.h
@@ -37,6 +38,7 @@ set(SOURCE
    ${CMAKE_CURRENT_SOURCE_DIR}/DemoPart.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/DemoPartClear.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/DemoPartScene.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/FloatTrack.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/IntegerTrack.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/LightNode.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/Material.cpp
