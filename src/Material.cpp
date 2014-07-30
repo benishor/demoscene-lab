@@ -1,5 +1,7 @@
 #include <Material.h>
-#include <GLheaders.h>
+#include <ShaderConstants.h>
+
+namespace Acidrain {
 
 GLenum toGL(const BlendingConstant& c) {
     switch (c) {
@@ -15,72 +17,47 @@ GLenum toGL(const BlendingConstant& c) {
     }
 }
 
-void Material::use() const {
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, &ambient[0]);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, &diffuse[0]);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, &specular[0]);
-    glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+void setMaterial(std::shared_ptr<Material>& material) {
+    material->shader->use();
 
-    if (isFlatShaded)
-        glShadeModel(GL_FLAT);
-    else
-        glShadeModel(GL_SMOOTH);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, &material->ambient[0]);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, &material->diffuse[0]);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, &material->specular[0]);
+    glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, material->shininess);
 
-    if (isOpaque) {
-        glDisable(GL_BLEND);
-    } else {
-        glEnable(GL_BLEND);
-        glBlendFunc(toGL(blendingSourceConstant), toGL(blendingDestinationConstant));
+    int textureUnit = 0;
+    for (auto& kv : material->textures) {
+        glActiveTexture(GL_TEXTURE0 + textureUnit);
+        const char* uniformName = ShaderConstantNameResolver::nameFor(kv.first);
+        material->shader->setIntUniform(textureUnit, uniformName);
+        kv.second->use();
+        textureUnit++;
     }
 
-    if (shouldTestDepthBuffer)
+    if (material->transparent) {
+        glEnable(GL_BLEND);
+        glBlendFunc(toGL(material->blendSrcFactor), toGL(material->blendDstFactor));
+    } else {
+        glDisable(GL_BLEND);
+    }
+
+    if (material->zBufferTest)
         glEnable(GL_DEPTH_TEST);
     else
         glDisable(GL_DEPTH_TEST);
 
-    if (shouldWriteToDepthBuffer)
+    if (material->zBufferWrite)
         glDepthMask(GL_TRUE);
     else
         glDepthMask(GL_FALSE);
 
-    if (shouldCullFaces) {
+    if (material->cullFaces) {
         glEnable(GL_CULL_FACE);
         glFrontFace(GL_CCW);
-        glCullFace(shouldCullFrontFaces ? GL_FRONT : GL_BACK);
+        glCullFace(material->cullFrontFaces ? GL_FRONT : GL_BACK);
     } else {
         glDisable(GL_CULL_FACE);
     }
-
-    if (!textures.empty()) {
-        int whichTexture = 0;
-        for (auto& texture : textures) {
-            glActiveTexture(GL_TEXTURE0 + whichTexture++);
-            glEnable(GL_TEXTURE_2D);
-            texture->use();
-        }
-    } else {
-        glDisable(GL_TEXTURE_2D);
-    }
-
-    if (shader) {
-        shader->use();
-    }
 }
 
-void Material::unuse() const {
-    if (!textures.empty()) {
-        int whichTexture = 0;
-        for (auto& texture : textures) {
-            glActiveTexture(GL_TEXTURE0 + whichTexture++);
-            texture->unuse();
-        }
-
-        glDisable(GL_TEXTURE_2D);
-    }
-
-    if (shader)
-        shader->unuse();
-
-    if (!shouldWriteToDepthBuffer)
-        glDepthMask(GL_TRUE);
-}
+} // namespace Acidrain

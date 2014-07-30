@@ -3,6 +3,7 @@ project(demo)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
 
 include(FindPkgConfig)
 pkg_search_module(SDL2 REQUIRED sdl2)

@@ -1,11 +1,19 @@
 #pragma once
 
-#include <vector>
-#include <Mesh.h>
-#include <PointLight.h>
+#include <memory>
+#include <SceneTree.h>
+#include <Timeline.h>
+
+namespace Acidrain {
 
 struct Scene {
 
-    std::vector<Mesh> meshes;
-    std::vector<PointLight> pointLights;
+    Scene();
+
+    std::shared_ptr<SceneTree>  tree;
+    std::shared_ptr<Timeline>   timeline;
+
+    void    transform();
 };
+
+} // namespace Acidrain

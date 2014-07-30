@@ -1,43 +1,6 @@
 #include <Mesh.h>
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
-using namespace glm;
-
-
-Mesh::Mesh() {}
-
-Mesh::~Mesh() {
-    if (vboId > 0)
-        glDeleteBuffers(1, &vboId);
-
-    if (vboData != nullptr)
-        delete [] vboData;
-}
-
-void Mesh::calculateNormals() {
-    for (auto& vertex : vertices)
-        vertex.normal = vec3(0);
-
-    for (auto& facet : facets) {
-        glm::vec3 a = vertices[facet.b].position - vertices[facet.a].position;
-        glm::vec3 b = vertices[facet.c].position - vertices[facet.a].position;
-        facet.normal = normalize(glm::cross(a, b));
-
-        vertices[facet.a].normal += facet.normal;
-        vertices[facet.b].normal += facet.normal;
-        vertices[facet.c].normal += facet.normal;
-    }
-
-    for (auto& vertex : vertices)
-        vertex.normal = normalize(vertex.normal);
-}
-
-void Mesh::computeModelToWorldMatrix() {
-    modelToWorldMatrix = translate(position) * toMat4(rotation) * glm::scale(scale);
-}
+namespace Acidrain {
 
 constexpr char* BUFFER_OFFSET(int i) {
     return (char*)NULL + i * sizeof(float);
@@ -51,7 +14,7 @@ constexpr int sizeOfVertexInBytes() {
     return componentsInVertex() * sizeof(float);
 }
 
-void Mesh::draw() {
+void Mesh::render() {
     if (vboId == 0) {
         vboData = new float[componentsInVertex() * facets.size() * 3];
 
@@ -91,3 +54,25 @@ void Mesh::draw() {
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
 }
+
+
+void calculateNormals(Mesh& mesh) {
+    for (auto& vertex : mesh.vertices)
+        vertex.normal = glm::vec3(0);
+
+    for (auto& facet : mesh.facets) {
+        glm::vec3 a = mesh.vertices[facet.b].position - mesh.vertices[facet.a].position;
+        glm::vec3 b = mesh.vertices[facet.c].position - mesh.vertices[facet.a].position;
+        facet.normal = glm::normalize(glm::cross(a, b));
+
+        mesh.vertices[facet.a].normal += facet.normal;
+        mesh.vertices[facet.b].normal += facet.normal;
+        mesh.vertices[facet.c].normal += facet.normal;
+    }
+
+    for (auto& vertex : mesh.vertices)
+        vertex.normal = glm::normalize(vertex.normal);
+}
+
+
+} // namespace Acidrain

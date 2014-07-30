@@ -2,6 +2,8 @@
 
 #include <GLheaders.h>
 
+namespace Acidrain {
+
 class Texture {
 public:
 
@@ -20,3 +22,5 @@ private:
     int height;
     GLuint textureId = 0;
 };
+
+} // namespace Acidrain

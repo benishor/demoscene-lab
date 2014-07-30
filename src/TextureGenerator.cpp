@@ -2,6 +2,8 @@
 #include <math.h>
 #include <cstring>
 
+namespace Acidrain {
+
 using namespace std;
 using namespace glm;
 
@@ -88,7 +90,7 @@ TextureGenerator& TextureGenerator::lens(unsigned char layer, unsigned char size
             int rsquare = rx * rx + ry * ry;
 
             if (rsquare <= sizeSquared) {
-                double r = sqrt(rsquare) / static_cast<double>(size);
+                double r = sqrt(static_cast<double>(rsquare)) / static_cast<double>(size);
                 c = 1 - r;
                 c = c * c;
                 if (r > 1)
@@ -168,3 +170,7 @@ shared_ptr<Texture> TextureGenerator::getTexture(unsigned char layer) {
 
 //     return *this;
 // }
+
+
+} // namespace Acidrain 
+

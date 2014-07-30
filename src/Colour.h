@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <glm/vec4.hpp>
+#include <GLMheaders.h>
 
 typedef glm::vec4 Colour;
 

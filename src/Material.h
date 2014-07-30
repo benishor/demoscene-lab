@@ -1,10 +1,13 @@
 #pragma once
 
-#include <Colour.h>
 #include <memory>
+#include <map>
+#include <GLheaders.h>
+#include <GLMheaders.h>
 #include <Texture.h>
 #include <Shader.h>
-#include <vector>
+
+namespace Acidrain {
 
 enum class FillMode {
     Wireframe,
@@ -22,29 +25,37 @@ enum class BlendingConstant {
     ONE_MINUS_DST_ALPHA,
 };
 
+enum class TextureRole {
+    Diffuse,
+    Specular,
+    Normal,
+    Bump
+};
+
+typedef std::map<TextureRole, std::shared_ptr<Texture>> TextureMap;
 
 struct Material {
+    glm::vec4   		ambient;
+    glm::vec4   		diffuse;
+    glm::vec4   		specular;
+    int         		shininess;
 
-    Colour ambient;
-    Colour diffuse;
-    Colour specular;
-    int shininess = 100;
+    bool flatShaded     = true;
+    bool zBufferWrite   = true;
+    bool zBufferTest    = true;
+    bool cullFaces      = false;
+    bool cullFrontFaces = false;
+    bool transparent    = false;
 
-    bool isFlatShaded = true;
-    bool shouldWriteToDepthBuffer = true;
-    bool shouldTestDepthBuffer = true;
-    bool shouldCullFaces = false;
-    bool shouldCullFrontFaces = false;
-    bool isOpaque = true; // if false, blending is enabled
+    BlendingConstant blendSrcFactor = BlendingConstant::SRC_ALPHA;
+    BlendingConstant blendDstFactor = BlendingConstant::ONE_MINUS_SRC_ALPHA;
 
-    BlendingConstant blendingSourceConstant = BlendingConstant::SRC_ALPHA;
-    BlendingConstant blendingDestinationConstant = BlendingConstant::ONE_MINUS_SRC_ALPHA;
-
-    FillMode fillMode = FillMode::Solid;
-
-    std::vector<std::shared_ptr<Texture>> textures;
+    FillMode 				fillMode = FillMode::Solid;
     std::shared_ptr<Shader> shader;
-
-    void use() const;
-    void unuse() const;
+    TextureMap				textures;
 };
+
+void setMaterial(std::shared_ptr<Material>& material);
+
+} // namespace Acidrain
+

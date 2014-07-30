@@ -3,6 +3,8 @@
 #include <Texture.h>
 #include <memory>
 
+namespace Acidrain {
+
 class TextureGenerator {
 public:
     TextureGenerator(int width, int height);
@@ -28,3 +30,6 @@ private:
     static const int NUM_LAYERS = 4;
     unsigned char* layers[NUM_LAYERS];
 };
+
+} // namespace Acidrain
+

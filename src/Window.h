@@ -2,6 +2,8 @@
 
 #include <SDL2/SDL.h>
 
+namespace Acidrain {
+
 enum class WindowType {
     Windowed,
     Fullscreen
@@ -25,3 +27,5 @@ private:
     SDL_Window* displayWindow;
     SDL_GLContext glContext;
 };
+
+} // namespace Acidrain

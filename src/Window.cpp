@@ -1,9 +1,9 @@
 #include <Window.h>
 #include <GLheaders.h>
+#include <GLMheaders.h>
 #include <SDL2/SDL_opengl.h>
 
-#define GLM_FORCE_RADIANS
-#include <glm/gtc/matrix_transform.hpp>
+namespace Acidrain {
 
 Window::Window(int w, int h, WindowType t)
     : width(w), height(h), type(t) {
@@ -98,3 +98,5 @@ void Window::initOpenGL() {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
+
+} // namespace Acidrain

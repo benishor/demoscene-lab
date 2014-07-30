@@ -1,5 +1,5 @@
 DONE - vertex buffers
-- full shader architecture
+DONE - full shader architecture
 - more primitives
 DONE - own transforms
 - render to texture

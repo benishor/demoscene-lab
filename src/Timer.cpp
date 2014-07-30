@@ -1,5 +1,7 @@
 #include <Timer.h>
 
+namespace Acidrain {
+
 using namespace std;
 
 Timer::Timer() {
@@ -19,3 +21,6 @@ double Timer::lap() {
     lastLapTime = currentTime;
     return elapsedSeconds.count();
 }
+
+} // namespace Acidrain
+
