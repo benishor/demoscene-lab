@@ -26,6 +26,13 @@ struct AnimatedValue {
 struct Key {
     float           time;
     AnimatedValue   value;
+
+    static Key* vec3Key(float t, glm::vec3 val) {
+        Key* result = new Key();
+        result->time = t;
+        result->value.vec3Val = val;
+        return result;
+    }
 };
 
 class AnimationTrack {

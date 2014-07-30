@@ -25,6 +25,7 @@ set(HEADERS
    ${CMAKE_CURRENT_SOURCE_DIR}/TextureGenerator.h
    ${CMAKE_CURRENT_SOURCE_DIR}/Timeline.h
    ${CMAKE_CURRENT_SOURCE_DIR}/Timer.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/Vec3Track.h
    ${CMAKE_CURRENT_SOURCE_DIR}/Window.h
    PARENT_SCOPE
 )
@@ -51,6 +52,7 @@ set(SOURCE
    ${CMAKE_CURRENT_SOURCE_DIR}/TextureGenerator.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/Timeline.cpp   
    ${CMAKE_CURRENT_SOURCE_DIR}/Timer.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/Vec3Track.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/Window.cpp
    PARENT_SCOPE
 )

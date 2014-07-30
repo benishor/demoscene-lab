@@ -32,13 +32,19 @@ int main() {
     Window window(800, 600, WindowType::Windowed);
 
     // --------------------------------------------------------------------------------------
+    // Load resources
+    // --------------------------------------------------------------------------------------
 
-    DemoData::textures.push_back(TextureGenerator(256, 256)
+    DemoData::textures.push_back(
+        TextureGenerator(256, 256)
         .checkerBoard(0, 16, glm::vec4(1, 1, 1, 0.9), glm::vec4(0, 0.3, 0.1, 0.9))
-        .getTexture(0));
-    DemoData::textures.push_back(TextureGenerator(256, 256)
+        .getTexture(0)
+    );
+    DemoData::textures.push_back(
+        TextureGenerator(256, 256)
         .checkerBoard(0, 64, glm::vec4(1, 0.2, 0.2, 0.9), glm::vec4(0.1, 0.1, 0.3, 0.9))
-        .getTexture(0));
+        .getTexture(0)
+    );
     DemoData::shaders.push_back(shared_ptr<Shader>(new Shader(vs, ps)));
     DemoData::meshes.push_back(MeshGenerator::cube());
 
@@ -50,13 +56,18 @@ int main() {
     DemoData::materials.push_back(material);
 
     // --------------------------------------------------------------------------------------
+    // Set up demo parts
+    // --------------------------------------------------------------------------------------
 
     DemoPartClear demoPartClear;
+    demoPartClear.startTime = 0;
+    demoPartClear.endTime = 4;
     demoPartClear.color = glm::vec4(0.1, 0, 0.2, 1);
     
-
     DemoPartScene demoPartScene;
-    demoPartScene.cameraName = "cam1";
+    demoPartScene.startTime = 0;
+    demoPartScene.endTime = 4;
+    demoPartScene.cameraName = "cam2";
 
     Scene* scene = new Scene();
     demoPartScene.scene = shared_ptr<Scene>(scene);
@@ -99,11 +110,26 @@ int main() {
     scene->tree->add(shared_ptr<SceneNode>(camNode2));
     scene->tree->add(shared_ptr<SceneNode>(lightNode));
 
-    Timer timer;
-    while (!window.shouldQuit() && timer.secondsSinceStart() < 20) {
+    shared_ptr<AnimationTrack> posTrack = shared_ptr<AnimationTrack>(new Vec3Track());
+    scene->timeline->tracks.push_back(posTrack);
 
-        demoPartClear.process(timer.secondsSinceStart() / 3.0);
-        demoPartScene.process(timer.secondsSinceStart() / 3.0);
+    posTrack->addControlledObject(&meshNode->position);
+
+    posTrack->addKey(Key::vec3Key(0.0, glm::vec3(0, 0, 0)));
+    posTrack->addKey(Key::vec3Key(0.5, glm::vec3(0, 1, 0)));
+    posTrack->addKey(Key::vec3Key(1.0, glm::vec3(0, 0, 0)));
+
+    // --------------------------------------------------------------------------------------
+    // Run demo
+    // --------------------------------------------------------------------------------------
+
+    Timer timer;
+    while (!window.shouldQuit() && timer.secondsSinceStart() < 4) {
+
+        double elapsedSeconds = timer.secondsSinceStart();
+
+        demoPartClear.process(demoPartClear.normalizeTime(elapsedSeconds));
+        demoPartScene.process(demoPartScene.normalizeTime(elapsedSeconds));
 
         window.present();
     }
