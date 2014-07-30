@@ -51,11 +51,15 @@ int main() {
 
     // --------------------------------------------------------------------------------------
 
-    DemoPartScene demoPart;
-    demoPart.cameraName = "cam1";
+    DemoPartClear demoPartClear;
+    demoPartClear.color = glm::vec4(0.1, 0, 0.2, 1);
+    
+
+    DemoPartScene demoPartScene;
+    demoPartScene.cameraName = "cam1";
 
     Scene* scene = new Scene();
-    demoPart.scene = shared_ptr<Scene>(scene);
+    demoPartScene.scene = shared_ptr<Scene>(scene);
 
     MeshNode* meshNode = new MeshNode();
     meshNode->mesh 		= DemoData::meshes[0];
@@ -98,10 +102,8 @@ int main() {
     Timer timer;
     while (!window.shouldQuit() && timer.secondsSinceStart() < 20) {
 
-        glClearColor(0.05f, 0.0f, 0.1f, 0.f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        demoPart.process(timer.secondsSinceStart() / 3.0);
+        demoPartClear.process(timer.secondsSinceStart() / 3.0);
+        demoPartScene.process(timer.secondsSinceStart() / 3.0);
 
         window.present();
     }
