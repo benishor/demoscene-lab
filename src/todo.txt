@@ -1,6 +1,6 @@
 DONE - vertex buffers
 DONE - full shader architecture
-- more primitives
+- more primitives (cylinder, cone, loft, map distort)
 DONE - own transforms
 - render to texture
 - particle engine
@@ -8,6 +8,12 @@ DONE - own transforms
 - god rays
 - marching cubes
 - tunnels
+
+# capturing demo output
+glc-capture --fps=60 -s --disable-audio -o demo.glc ./demo 
+
+# encoding capture
+glc-play demo.glc -y 1 -o - | mencoder -demuxer y4m - -ovc lavc -lavcopts vcodec=mpeg4:vbitrate=3000 -o demo.avi
 
 Questions:
 - should fov + near/far clip planes be part of cameras? if so, how will cams get to know about aspect ratio?

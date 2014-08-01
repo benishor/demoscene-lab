@@ -56,6 +56,7 @@ struct Material {
 };
 
 void setMaterial(std::shared_ptr<Material>& material);
+void unsetMaterial(std::shared_ptr<Material>& material);
 
 } // namespace Acidrain
 

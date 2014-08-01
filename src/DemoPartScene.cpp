@@ -21,17 +21,42 @@ void DemoPartScene::process(float normalizedTime) {
         shaderConstants.add(ShaderConstantType::ProjectionMatrix, &camera.projectionMatrix[0][0]);
         shaderConstants.add(ShaderConstantType::DemoPartNormalizedTime, &normalizedTime);
 
+        // draw opaque nodes
         for (auto& node : scene->tree->nodes) {
             if (node->type == SceneNodeType::Mesh) {
                 MeshNode& meshNode = node->asMeshNode();
-                setMaterial(meshNode.material);
+                if (!meshNode.material->transparent) {
+                    setMaterial(meshNode.material);
 
-                shaderConstants.add(ShaderConstantType::ModelToWorldMatrix, &meshNode.modelToWorldSpaceMatrix[0][0]);
-                shaderConstants.set(*meshNode.material->shader);
+                    shaderConstants.add(ShaderConstantType::ModelToWorldMatrix, &meshNode.modelToWorldSpaceMatrix[0][0]);
+                    shaderConstants.set(*meshNode.material->shader);
 
-                meshNode.mesh->render();
+                    meshNode.mesh->render();
+
+                    unsetMaterial(meshNode.material);
+                }
             }
         }
+
+        // draw opaque nodes
+        for (auto& node : scene->tree->nodes) {
+            if (node->type == SceneNodeType::Mesh) {
+                MeshNode& meshNode = node->asMeshNode();
+                if (meshNode.material->transparent) {
+                    setMaterial(meshNode.material);
+
+                    shaderConstants.add(ShaderConstantType::ModelToWorldMatrix, &meshNode.modelToWorldSpaceMatrix[0][0]);
+                    shaderConstants.set(*meshNode.material->shader);
+
+                    meshNode.mesh->render();
+                    
+                    unsetMaterial(meshNode.material);
+                }
+            }
+        }
+
+
+
     }
 }
 

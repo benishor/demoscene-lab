@@ -60,4 +60,29 @@ void setMaterial(std::shared_ptr<Material>& material) {
     }
 }
 
+void unsetMaterial(std::shared_ptr<Material>& material) {
+    material->shader->unuse();
+
+    int textureUnit = 0;
+    for (auto& kv : material->textures) {
+        glActiveTexture(GL_TEXTURE0 + textureUnit);
+        const char* uniformName = ShaderConstantNameResolver::nameFor(kv.first);
+        material->shader->setIntUniform(textureUnit, uniformName);
+        kv.second->unuse();
+        textureUnit++;
+    }
+
+    if (material->transparent)
+        glDisable(GL_BLEND);
+
+    if (!material->zBufferTest)
+        glEnable(GL_DEPTH_TEST);
+
+    if (!material->zBufferWrite)
+        glDepthMask(GL_TRUE);
+
+    if (material->cullFaces)
+        glDisable(GL_CULL_FACE);
+}
+
 } // namespace Acidrain

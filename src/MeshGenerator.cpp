@@ -215,28 +215,107 @@ std::shared_ptr<Mesh> MeshGenerator::grid(int xSegments, int ySegments) {
             int next = current + 1;
             int bottom = next + xSegments;
             int bottomNext = bottom + 1;
-            addFacet(*result, current, bottom, next, 
-                result->vertices[current].position.x + 0.5, 
-                0.5 - result->vertices[current].position.y,
-                result->vertices[bottom].position.x + 0.5, 
-                0.5 - result->vertices[bottom].position.y,
-                result->vertices[next].position.x + 0.5, 
-                0.5 - result->vertices[next].position.y,
-                true, false, true );
+            addFacet(*result, current, bottom, next,
+                     result->vertices[current].position.x + 0.5,
+                     0.5 - result->vertices[current].position.y,
+                     result->vertices[bottom].position.x + 0.5,
+                     0.5 - result->vertices[bottom].position.y,
+                     result->vertices[next].position.x + 0.5,
+                     0.5 - result->vertices[next].position.y,
+                     true, false, true );
 
-            addFacet(*result, next, bottom, bottomNext, 
-                result->vertices[next].position.x + 0.5, 
-                0.5 - result->vertices[next].position.y,
-                result->vertices[bottom].position.x + 0.5, 
-                0.5 - result->vertices[bottom].position.y,
-                result->vertices[bottomNext].position.x + 0.5, 
-                0.5 - result->vertices[bottomNext].position.y,
-                false, true, true);
+            addFacet(*result, next, bottom, bottomNext,
+                     result->vertices[next].position.x + 0.5,
+                     0.5 - result->vertices[next].position.y,
+                     result->vertices[bottom].position.x + 0.5,
+                     0.5 - result->vertices[bottom].position.y,
+                     result->vertices[bottomNext].position.x + 0.5,
+                     0.5 - result->vertices[bottomNext].position.y,
+                     false, true, true);
         }
     }
 
     calculateNormals(*result);
     return std::shared_ptr<Mesh>(result);
 }
+
+std::shared_ptr<Mesh> MeshGenerator::cylinder(int xSegments, int ySegments, bool capTop, bool capBottom) {
+    Mesh* result = new Mesh();
+    for (int y = 0; y <= ySegments; y++) {
+        float yPos = 1.0 - (y / static_cast<float>(ySegments)) - 0.5f;
+        for (int x = 0; x <= xSegments; x++) {
+            float xPos = 0.5f * sinf((x / static_cast<float>(xSegments)) * 2.0 * M_PI);
+            float zPos = 0.5f * cosf((x / static_cast<float>(xSegments)) * 2.0 * M_PI);
+            addVertex(*result, xPos, yPos, zPos);
+        }
+    }
+
+    float du = 1.0 / static_cast<float>(xSegments);
+    float dv = 1.0 / static_cast<float>(ySegments + 2); // +2 because of capping
+
+    for (int y = 0; y < ySegments; y++) {
+        for (int x = 0; x < xSegments; x++) {
+            int current = x + (y * (ySegments + 1));
+            int next = current + 1;
+            int bottom = next + xSegments;
+            int bottomNext = bottom + 1;
+            addFacet(*result, current, bottom, next,
+                     x * du,
+                     (y + 1)*dv,
+                     x * du,
+                     (y + 2)*dv,
+                     (x + 1) * du,
+                     (y + 1)*dv,
+                     true, false, true );
+
+            addFacet(*result, next, bottom, bottomNext,
+                     (x + 1) * du,
+                     (y + 1)*dv,
+                     x * du,
+                     (y + 2)*dv,
+                     (x + 1) * du,
+                     (y + 2)*dv,
+                     false, true, true);
+        }
+    }
+
+    if (capTop) {
+        int topCapIndex = result->vertices.size();
+        addVertex(*result, 0, 0.5, 0);
+
+        for (int x = 0; x < xSegments; x++) {
+            addFacet(*result, x, x + 1, topCapIndex,
+                     x * du,
+                     1.0 - dv,
+                     (x + 1) * du,
+                     1.0 - dv,
+                     (x + 0.5f) * du,
+                     1.0,
+                     false, false, true );
+        }
+    }
+
+    if (capBottom) {
+        int bottomCapIndex = result->vertices.size();
+        addVertex(*result, 0, -0.5, 0);
+
+        int offsetOfLastRing = (xSegments + 1) * ySegments;
+
+        for (int x = 0; x < xSegments; x++) {
+            addFacet(*result, x + 1 + offsetOfLastRing, x + offsetOfLastRing, bottomCapIndex,
+                     (x + 1) * du,
+                     dv,
+                     (x) * du,
+                     dv,
+                     (x + 0.5f) * du,
+                     0,
+                     false, false, true);
+        }
+    }
+
+    calculateNormals(*result);
+    return std::shared_ptr<Mesh>(result);
+}
+
 
 } // namespace Acidrain

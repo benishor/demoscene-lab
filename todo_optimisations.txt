@@ -6,4 +6,5 @@ Possible optimizations
 - compress material flags into an int
 - shader based texture generator?
 - glsl minifier on shader sources, preprocess step that generates minified source
-- optimize mesh generation
+- optimize mesh generation (grid and cylinder can be mixed. possibly cone too)
+- get rid of smart pointers, get rid of deallocations, not nice but no point in wasting code space on dealloc 
