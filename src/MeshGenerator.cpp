@@ -1,4 +1,5 @@
 #include <MeshGenerator.h>
+#include <glm/vec2.hpp>
 
 namespace Acidrain {
 
@@ -64,5 +65,178 @@ std::shared_ptr<Mesh> MeshGenerator::cube() {
     return std::shared_ptr<Mesh>(result);
 }
 
+
+std::shared_ptr<Mesh> MeshGenerator::sphere(int longitudePoints, int latitudePoints) {
+    Mesh* result = new Mesh;
+
+    Vertex v;
+    Facet f;
+    Edge edge;
+
+    double x, y, z;
+
+    double du = 1.0 / static_cast<double>(longitudePoints);
+    double dv = 1.0 / static_cast<double>(latitudePoints + 1);
+
+    for (int j = 0; j < latitudePoints; j++) {
+
+        y = 1.0 - (j + 1) * 2.0 / static_cast<double>(latitudePoints + 1);
+        double currentCircleRadius = sin(M_PI * (j + 1) / static_cast<double>(latitudePoints + 1));
+
+        for (int i = 0; i < longitudePoints; i++) {
+
+            x = currentCircleRadius * cos((i * 2.0 * M_PI) / static_cast<double>(longitudePoints));
+            z = currentCircleRadius * sin((i * 2.0 * M_PI) / static_cast<double>(longitudePoints));
+
+            v.position = glm::normalize(glm::vec3(x, y, z));
+            result->vertices.push_back(v);
+
+            if (j > 0) {
+                int currentVertexIndex = j * longitudePoints + i;
+                int nextVertexIndex = j * longitudePoints + ((i + 1) % longitudePoints);
+                int topVertexIndex = (j - 1) * longitudePoints + i;
+                int topNextVertexIndex = (j - 1) * longitudePoints + ((i + 1) % longitudePoints);
+
+                glm::vec2 currentUV = glm::vec2(i * du, (j + 2) * dv);
+                glm::vec2 nextUV = glm::vec2((i + 1) * du, (j + 2) * dv);
+                glm::vec2 topUV = glm::vec2(i * du, (j + 1) * dv);
+                glm::vec2 topNextUV = glm::vec2((i + 1) * du, (j + 1) * dv);
+
+                f.a = currentVertexIndex;
+                f.b = topVertexIndex;
+                f.c = nextVertexIndex;
+
+                f.textCoords[0] = currentUV;
+                f.textCoords[1] = topUV;
+                f.textCoords[2] = nextUV;
+
+                result->facets.push_back(f);
+
+                f.a = nextVertexIndex;
+                f.b = topVertexIndex;
+                f.c = topNextVertexIndex;
+
+                f.textCoords[0] = nextUV;
+                f.textCoords[1] = topUV;
+                f.textCoords[2] = topNextUV;
+
+                result->facets.push_back(f);
+
+                edge.from = topVertexIndex;
+                edge.to = topNextVertexIndex;
+                result->edges.push_back(edge);
+
+                edge.from = topVertexIndex;
+                edge.to = currentVertexIndex;
+                result->edges.push_back(edge);
+            }
+        }
+    }
+
+    // top capping
+    v.position = glm::vec3(0, 1.0, 0);
+    result->vertices.push_back(v);
+
+    int topVertexIndex = longitudePoints * latitudePoints;
+    for (int i = 0; i < longitudePoints; i++) {
+        int j = 0;
+
+        int currentVertexIndex = i;
+        int nextVertexIndex = (currentVertexIndex + 1) % longitudePoints;
+
+        glm::vec2 currentUV = glm::vec2(i * du, dv);
+        glm::vec2 nextUV = glm::vec2((i + 1) * du, dv);
+        glm::vec2 topUV = glm::vec2((i + 0.5) * du, 0);
+
+        f.textCoords[0] = currentUV;
+        f.textCoords[1] = nextUV;
+        f.textCoords[2] = topUV;
+
+        f.a = currentVertexIndex;
+        f.c = nextVertexIndex;
+        f.b = topVertexIndex;
+        result->facets.push_back(f);
+
+        edge.from = topVertexIndex;
+        edge.to = currentVertexIndex;
+        result->edges.push_back(edge);
+    }
+
+    // bottom capping
+    v.position = glm::vec3(0, -1.0, 0);
+    result->vertices.push_back(v);
+
+    int bottomVertexIndex = topVertexIndex + 1;
+    for (int i = 0; i < longitudePoints; i++) {
+        int j = latitudePoints;
+
+        int currentVertexIndex = i + (latitudePoints - 1) * longitudePoints;
+        int nextVertexIndex = (i + 1) % longitudePoints + (latitudePoints - 1) * longitudePoints;
+
+        glm::vec2 currentUV = glm::vec2(i * du, 1.0 - dv);
+        glm::vec2 nextUV = glm::vec2((i + 1) * du, 1.0 - dv);
+        glm::vec2 bottomUV = glm::vec2((i + 0.5) * du, 1.0);
+
+        f.textCoords[0] = currentUV;
+        f.textCoords[1] = bottomUV;
+        f.textCoords[2] = nextUV;
+
+        f.a = currentVertexIndex;
+        f.c = bottomVertexIndex;
+        f.b = nextVertexIndex;
+        result->facets.push_back(f);
+
+        edge.from = currentVertexIndex;
+        edge.to = nextVertexIndex;
+        result->edges.push_back(edge);
+
+        edge.from = currentVertexIndex;
+        edge.to = bottomVertexIndex;
+        result->edges.push_back(edge);
+    }
+
+    calculateNormals(*result);
+    return std::shared_ptr<Mesh>(result);
+}
+
+std::shared_ptr<Mesh> MeshGenerator::grid(int xSegments, int ySegments) {
+    Mesh* result = new Mesh();
+    for (int y = 0; y < (ySegments + 1); y++) {
+        float yPos = (y / static_cast<float>(ySegments)) - 0.5f;
+        for (int x = 0; x < (xSegments + 1); x++) {
+            float xPos = (x / static_cast<float>(xSegments)) - 0.5f;
+            addVertex(*result, xPos, yPos, 0);
+        }
+    }
+
+    for (int y = 0; y < ySegments; y++) {
+        for (int x = 0; x < xSegments; x++) {
+            int current = x + (y * (ySegments + 1));
+            int next = current + 1;
+            int bottom = next + xSegments;
+            int bottomNext = bottom + 1;
+            addFacet(*result, current, bottom, next, 
+                result->vertices[current].position.x + 0.5, 
+                0.5 - result->vertices[current].position.y,
+                result->vertices[bottom].position.x + 0.5, 
+                0.5 - result->vertices[bottom].position.y,
+                result->vertices[next].position.x + 0.5, 
+                0.5 - result->vertices[next].position.y,
+                true, false, true );
+
+            addFacet(*result, next, bottom, bottomNext, 
+                result->vertices[next].position.x + 0.5, 
+                0.5 - result->vertices[next].position.y,
+                result->vertices[bottom].position.x + 0.5, 
+                0.5 - result->vertices[bottom].position.y,
+                result->vertices[bottomNext].position.x + 0.5, 
+                0.5 - result->vertices[bottomNext].position.y,
+                false, true, true);
+        }
+    }
+
+    calculateNormals(*result);
+    return std::shared_ptr<Mesh>(result);
+}
 
 } // namespace Acidrain

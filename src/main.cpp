@@ -47,6 +47,8 @@ int main() {
     );
     DemoData::shaders.push_back(shared_ptr<Shader>(new Shader(vs, ps)));
     DemoData::meshes.push_back(MeshGenerator::cube());
+    DemoData::meshes.push_back(MeshGenerator::sphere(30, 30));
+    DemoData::meshes.push_back(MeshGenerator::grid(30, 30));
 
     shared_ptr<Material> material = shared_ptr<Material>(new Material());
     material->shader = DemoData::shaders[0];
@@ -78,12 +80,12 @@ int main() {
     meshNode->position  = glm::vec3(0, 0, 0);
 
     MeshNode* meshNode2 = new MeshNode();
-    meshNode2->mesh      = DemoData::meshes[0];
+    meshNode2->mesh      = DemoData::meshes[1];
     meshNode2->material  = DemoData::materials[0];
     meshNode2->position  = glm::vec3(-1.5, 0, 0);
 
     MeshNode* meshNode3 = new MeshNode();
-    meshNode3->mesh      = DemoData::meshes[0];
+    meshNode3->mesh      = DemoData::meshes[2];
     meshNode3->material  = DemoData::materials[0];
     meshNode3->position  = glm::vec3(1.5, 0, 0);
 
@@ -104,7 +106,7 @@ int main() {
     lightNode->lightType = LightType::Point;
 
     scene->tree->add(shared_ptr<SceneNode>(meshNode));
-    scene->tree->add(shared_ptr<SceneNode>(meshNode2));
+    scene->tree->add(shared_ptr<SceneNode>(meshNode2), shared_ptr<SceneNode>(meshNode));
     scene->tree->add(shared_ptr<SceneNode>(meshNode3));
     scene->tree->add(shared_ptr<SceneNode>(camNode));
     scene->tree->add(shared_ptr<SceneNode>(camNode2));
