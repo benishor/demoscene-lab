@@ -222,7 +222,7 @@ std::shared_ptr<Mesh> MeshGenerator::grid(int xSegments, int ySegments) {
                      0.5 - result->vertices[bottom].position.y,
                      result->vertices[next].position.x + 0.5,
                      0.5 - result->vertices[next].position.y,
-                     true, false, true );
+                     true, false, true);
 
             addFacet(*result, next, bottom, bottomNext,
                      result->vertices[next].position.x + 0.5,
@@ -266,7 +266,7 @@ std::shared_ptr<Mesh> MeshGenerator::cylinder(int xSegments, int ySegments, bool
                      (y + 2)*dv,
                      (x + 1) * du,
                      (y + 1)*dv,
-                     true, false, true );
+                     true, false, true);
 
             addFacet(*result, next, bottom, bottomNext,
                      (x + 1) * du,
@@ -291,7 +291,7 @@ std::shared_ptr<Mesh> MeshGenerator::cylinder(int xSegments, int ySegments, bool
                      1.0 - dv,
                      (x + 0.5f) * du,
                      1.0,
-                     false, false, true );
+                     false, false, true);
         }
     }
 
@@ -315,6 +315,29 @@ std::shared_ptr<Mesh> MeshGenerator::cylinder(int xSegments, int ySegments, bool
 
     calculateNormals(*result);
     return std::shared_ptr<Mesh>(result);
+}
+
+void mapXform(std::shared_ptr<Mesh> mesh,
+              TextureGenerator& texgen,
+              unsigned char layer,
+              unsigned char channel,
+              float effectIntensity) {
+
+    std::vector<Vertex> originalVertices(mesh->vertices);
+
+    unsigned char* data = texgen.get(layer);
+
+    for (auto& f : mesh->facets) {
+        for (int i = 0; i < 3; i++) {
+            int u = static_cast<int>(f.textCoords[i].x * texgen.width) % texgen.width;
+            int v = static_cast<int>(f.textCoords[i].y * texgen.height) % texgen.height;
+
+            int valInMap = data[(u + v * texgen.width) * 4 + channel];
+            float normalizedValueInMap = valInMap / 255.0f;
+
+            mesh->vertices[f.vertices[i]].position = originalVertices[f.vertices[i]].position + (mesh->vertices[f.vertices[i]].normal * normalizedValueInMap * effectIntensity);
+        }
+    }
 }
 
 

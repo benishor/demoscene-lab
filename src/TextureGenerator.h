@@ -24,9 +24,10 @@ public:
     unsigned char* get(unsigned char layer);
     std::shared_ptr<Texture> getTexture(unsigned char layer);
 
-private:
     int width;
     int height;
+
+private:
     static const int NUM_LAYERS = 4;
     unsigned char* layers[NUM_LAYERS];
 };

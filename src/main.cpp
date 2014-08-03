@@ -28,7 +28,7 @@ const char* ps2 = R"(
     uniform sampler2D mapSpecular;
     uniform float dptimen;
     void main (void) {
-        gl_FragColor = texture2D(mapDiffuse, gl_TexCoord[0].st + vec2(dptimen)) * 0.5  + texture2D(mapSpecular, gl_TexCoord[0].st - vec2(dptimen/2.0)) * 0.5;
+        gl_FragColor = texture2D(mapDiffuse, gl_TexCoord[0].st + vec2(dptimen)) * 0.5 + texture2D(mapSpecular, gl_TexCoord[0].st - vec2(dptimen/2.0));
     }
 )";
 
@@ -46,7 +46,7 @@ int main() {
 
     DemoData::textures.push_back(
         TextureGenerator(256, 256)
-        .checkerBoard(0, 16, glm::vec4(1, 1, 1, 0.9), glm::vec4(0, 0.3, 0.1, 0.9))
+        .checkerBoard(0, 8, glm::vec4(1, 1, 1, 0.9), glm::vec4(0, 0.3, 0.1, 0.9))
         .getTexture(0)
     );
     DemoData::textures.push_back(
@@ -62,7 +62,14 @@ int main() {
     DemoData::meshes.push_back(MeshGenerator::sphere(30, 30));
     // DemoData::meshes.push_back(MeshGenerator::grid(30, 30));
     // DemoData::meshes.push_back(MeshGenerator::cylinder(30, 30, false, false));
-    DemoData::meshes.push_back(MeshGenerator::sphere(40, 40));
+    DemoData::meshes.push_back(MeshGenerator::sphere(100, 100));
+    // DemoData::meshes.push_back(MeshGenerator::grid(200, 200));
+
+    TextureGenerator texgen = TextureGenerator(256, 256);
+    texgen.checkerBoard(0, 8, glm::vec4(1), glm::vec4(0));
+    // texgen.lens(0, 100);
+    mapXform(DemoData::meshes[2], texgen, 0, 0, 0.1);
+
 
     auto material = shared_ptr<Material>(new Material());
     material->shader = DemoData::shaders[0];
@@ -112,22 +119,24 @@ int main() {
     meshNode2->mesh      = DemoData::meshes[2];
     meshNode2->material  = DemoData::materials[1];
     meshNode2->position  = glm::vec3(0, 0, 0);
-    meshNode2->scale     = glm::vec3(0.8, 0.8, 0.8);
+    meshNode2->scale     = glm::vec3(0.8);
+    meshNode2->rotation  = glm::angleAxis(2.25f , glm::vec3(1.0f, 0.0f, 0.0f));
 
     auto meshNode3 = shared_ptr<MeshNode>(new MeshNode());
     meshNode3->mesh      = DemoData::meshes[2];
     meshNode3->material  = DemoData::materials[0];
     meshNode3->position  = glm::vec3(0, 0, 0);
+    meshNode3->rotation  = glm::angleAxis(2.25f , glm::vec3(1.0f, 0.0f, 0.0f));
 
     auto camNode = shared_ptr<CameraNode>(new CameraNode());
     camNode->name 		= "cam1";
-    camNode->position 	= glm::vec3(0, 0, 1.5);
+    camNode->position 	= glm::vec3(0, 0, 1.3);
     camNode->target 	= glm::vec3(0, 0, 0);
     camNode->fov 		= 45;
 
     auto camNode2 = shared_ptr<CameraNode>(new CameraNode());
     camNode2->name       = "cam2";
-    camNode2->position   = glm::vec3(0, 0, 3);
+    camNode2->position   = glm::vec3(0, -1, 1);
     camNode2->target     = glm::vec3(0);
     camNode2->fov        = 45;
 
@@ -153,8 +162,8 @@ int main() {
     // posTrack->addKey(Key::vec3Key(1.0, glm::vec3(0, 0, 0)));
 
     // Scale track
-    auto scaleTrack = shared_ptr<AnimationTrack>(new FloatTrack());
-    scene->timeline->tracks.push_back(scaleTrack);
+    // auto scaleTrack = shared_ptr<AnimationTrack>(new FloatTrack());
+    // scene->timeline->tracks.push_back(scaleTrack);
 
     // scaleTrack->addControlledObject(&meshNode->scale.x);
     // scaleTrack->addControlledObject(&meshNode->scale.y);
@@ -164,17 +173,17 @@ int main() {
     // scaleTrack->addControlledObject(&meshNode2->scale.y);
     // scaleTrack->addControlledObject(&meshNode2->scale.z);
 
-    scaleTrack->addControlledObject(&camNode->position.z);
+    // scaleTrack->addControlledObject(&camNode->position.z);
 
-    scaleTrack->addKey(Key::floatKey(0.00, 2));
-    scaleTrack->addKey(Key::floatKey(0.01, 3));
-    scaleTrack->addKey(Key::floatKey(0.25, 2));
-    scaleTrack->addKey(Key::floatKey(0.26, 3));
-    scaleTrack->addKey(Key::floatKey(0.50, 2));
-    scaleTrack->addKey(Key::floatKey(0.51, 3));
-    scaleTrack->addKey(Key::floatKey(0.75, 2));
-    scaleTrack->addKey(Key::floatKey(0.76, 3));
-    scaleTrack->addKey(Key::floatKey(1.00, 2));
+    // scaleTrack->addKey(Key::floatKey(0.00, 2));
+    // scaleTrack->addKey(Key::floatKey(0.01, 1));
+    // scaleTrack->addKey(Key::floatKey(0.25, 2));
+    // scaleTrack->addKey(Key::floatKey(0.26, 1));
+    // scaleTrack->addKey(Key::floatKey(0.50, 2));
+    // scaleTrack->addKey(Key::floatKey(0.51, 1));
+    // scaleTrack->addKey(Key::floatKey(0.75, 2));
+    // scaleTrack->addKey(Key::floatKey(0.76, 1));
+    // scaleTrack->addKey(Key::floatKey(1.00, 2));
 
 
     // Color track

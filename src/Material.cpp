@@ -18,6 +18,7 @@ GLenum toGL(const BlendingConstant& c) {
 }
 
 void setMaterial(std::shared_ptr<Material>& material) {
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     material->shader->use();
 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, &material->ambient[0]);
