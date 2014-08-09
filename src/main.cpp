@@ -29,6 +29,7 @@ const char* ps2 = R"(
     uniform float dptimen;
     void main (void) {
         gl_FragColor = texture2D(mapDiffuse, gl_TexCoord[0].st + vec2(dptimen)) * 0.5 + texture2D(mapSpecular, gl_TexCoord[0].st - vec2(dptimen/2.0));
+        // gl_FragColor = texture2D(mapDiffuse, gl_TexCoord[0].st);
     }
 )";
 
@@ -62,13 +63,20 @@ int main() {
     DemoData::meshes.push_back(MeshGenerator::sphere(30, 30));
     // DemoData::meshes.push_back(MeshGenerator::grid(30, 30));
     // DemoData::meshes.push_back(MeshGenerator::cylinder(30, 30, false, false));
-    DemoData::meshes.push_back(MeshGenerator::sphere(100, 100));
-    // DemoData::meshes.push_back(MeshGenerator::grid(200, 200));
+    // DemoData::meshes.push_back(MeshGenerator::sphere(30, 30));
+    DemoData::meshes.push_back(MeshGenerator::cube());
+    // DemoData::meshes.push_back(MeshGenerator::grid(30, 30));
+
+
+    for (int i = 0; i < 6; i++) {
+        subdivide(DemoData::meshes[2]);
+    }
 
     TextureGenerator texgen = TextureGenerator(256, 256);
-    texgen.checkerBoard(0, 8, glm::vec4(1), glm::vec4(0));
-    // texgen.lens(0, 100);
-    mapXform(DemoData::meshes[2], texgen, 0, 0, 0.1);
+    // texgen.checkerBoard(0, 32, glm::vec4(1), glm::vec4(0));
+    // texgen.roll(0, 8, 8);
+    texgen.lens(0, 100);
+    mapXform(DemoData::meshes[2], texgen, 0, 0, -0.4);
 
 
     auto material = shared_ptr<Material>(new Material());
@@ -87,6 +95,7 @@ int main() {
     material2->shader = DemoData::shaders[1];
     material2->textures[TextureRole::Diffuse] = DemoData::textures[0];
     material2->textures[TextureRole::Specular] = DemoData::textures[1];
+    // material2->cullFaces = true;
     material2->transparent  = false;
     material2->zBufferWrite = true;
     material2->zBufferTest  = true;
@@ -130,7 +139,7 @@ int main() {
 
     auto camNode = shared_ptr<CameraNode>(new CameraNode());
     camNode->name 		= "cam1";
-    camNode->position 	= glm::vec3(0, 0, 1.3);
+    camNode->position 	= glm::vec3(0.3, 0, 0.5);
     camNode->target 	= glm::vec3(0, 0, 0);
     camNode->fov 		= 45;
 
@@ -144,9 +153,9 @@ int main() {
     lightNode->position  = glm::vec3(0, 0, 1);
     lightNode->lightType = LightType::Point;
 
-    scene->tree->add(meshNode);
+    // scene->tree->add(meshNode);
     scene->tree->add(meshNode2);
-    scene->tree->add(meshNode3);
+    // scene->tree->add(meshNode3);
     scene->tree->add(camNode);
     scene->tree->add(camNode2);
     scene->tree->add(lightNode);

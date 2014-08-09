@@ -1,5 +1,7 @@
 #include <MeshGenerator.h>
 #include <glm/vec2.hpp>
+#include <map>
+#include <iostream>
 
 namespace Acidrain {
 
@@ -340,5 +342,80 @@ void mapXform(std::shared_ptr<Mesh> mesh,
     }
 }
 
+
+unsigned int indexInMap(short unsigned int from, short unsigned int to) {
+    return from < to ?
+           from + (static_cast<unsigned int>(to) << 16 ) :
+           to + (static_cast<unsigned int>(from) << 16);
+}
+
+void subdivide(std::shared_ptr<Mesh> mesh) {
+    Vertex v;
+
+    // we need to keep the old facets because we're modifying the new ones as we go
+    std::vector<Facet> oldFacets = mesh->facets;
+
+    // key is encoded as from/to edge, 16 bits each, from in lower 16 bits, to in upper 16 bits
+    // "from" is always smaller than "to"
+    std::map<unsigned int, int> subdividedVertices;
+
+    int facetIndex = 0;
+    for (auto& f : oldFacets) {
+        for (int j = 0; j < 3; j++) {
+            unsigned int from = f.vertices[j];
+            unsigned int to = f.vertices[(j + 1) % 3];
+
+            // make sure all subdivided vertices are unique and not duplicated
+            if (subdividedVertices[indexInMap(from, to)] == 0) {
+                subdividedVertices[indexInMap(from, to)] = mesh->vertices.size();
+                v.position = (mesh->vertices[from].position + mesh->vertices[to].position) / 2.0f;
+                mesh->vertices.push_back(v);
+            }
+        }
+
+        // add new facets
+        addFacet(*mesh,
+                 subdividedVertices[indexInMap(f.vertices[0], f.vertices[1])], 
+                 f.vertices[1], 
+                 subdividedVertices[indexInMap(f.vertices[1], f.vertices[2])], 
+                 (f.textCoords[0].x + f.textCoords[1].x) / 2.0f, (f.textCoords[0].y + f.textCoords[1].y) / 2.0f,
+                 f.textCoords[1].x, f.textCoords[1].y,
+                 (f.textCoords[1].x + f.textCoords[2].x) / 2.0f, (f.textCoords[1].y + f.textCoords[2].y) / 2.0f,
+                 false, false, false);
+
+        addFacet(*mesh,
+                 subdividedVertices[indexInMap(f.vertices[1], f.vertices[2])], 
+                 f.vertices[2], 
+                 subdividedVertices[indexInMap(f.vertices[2], f.vertices[0])], 
+                 (f.textCoords[1].x + f.textCoords[2].x) / 2.0f, (f.textCoords[1].y + f.textCoords[2].y) / 2.0f,
+                 f.textCoords[2].x, f.textCoords[2].y,
+                 (f.textCoords[2].x + f.textCoords[0].x) / 2.0f, (f.textCoords[2].y + f.textCoords[0].y) / 2.0f,
+                 false, false, false);
+
+        addFacet(*mesh,
+                 subdividedVertices[indexInMap(f.vertices[2], f.vertices[0])], 
+                 f.vertices[0], 
+                 subdividedVertices[indexInMap(f.vertices[0], f.vertices[1])], 
+                 (f.textCoords[2].x + f.textCoords[0].x) / 2.0f, (f.textCoords[2].y + f.textCoords[0].y) / 2.0f,
+                 f.textCoords[0].x, f.textCoords[0].y,
+                 (f.textCoords[0].x + f.textCoords[1].x) / 2.0f, (f.textCoords[0].y + f.textCoords[1].y) / 2.0f,
+                 false, false, false);
+
+        // modify current face to make it center of the subdivision
+        mesh->facets[facetIndex].vertices[0] = subdividedVertices[indexInMap(f.vertices[0], f.vertices[1])];
+        mesh->facets[facetIndex].vertices[1] = subdividedVertices[indexInMap(f.vertices[1], f.vertices[2])];
+        mesh->facets[facetIndex].vertices[2] = subdividedVertices[indexInMap(f.vertices[2], f.vertices[0])];
+
+        glm::vec2 oldTextCoords[3] = f.textCoords;
+
+        mesh->facets[facetIndex].textCoords[0] = (oldTextCoords[0] + oldTextCoords[1]) / 2.0f;
+        mesh->facets[facetIndex].textCoords[1] = (oldTextCoords[1] + oldTextCoords[2]) / 2.0f;
+        mesh->facets[facetIndex].textCoords[2] = (oldTextCoords[2] + oldTextCoords[0]) / 2.0f;
+
+        facetIndex++;
+    }
+
+    calculateNormals(*mesh);
+}
 
 } // namespace Acidrain

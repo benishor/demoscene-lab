@@ -14,6 +14,7 @@ struct MeshGenerator {
 };
 
 void mapXform(std::shared_ptr<Mesh> mesh, TextureGenerator& texgen, unsigned char layer, unsigned char channel, float effectIntensity);
+void subdivide(std::shared_ptr<Mesh> mesh);
 
 } // namespace Acidrain
 
