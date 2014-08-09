@@ -221,11 +221,9 @@ int main() {
 
     isoSurfaceThresholdTrack->addControlledObject(&demoPartMarchingCubes.minFieldValue);
 
-    isoSurfaceThresholdTrack->addKey(Key::floatKey(0.00, 3));
-    isoSurfaceThresholdTrack->addKey(Key::floatKey(0.30, 1.8));
-    isoSurfaceThresholdTrack->addKey(Key::floatKey(0.50, 3));
-    isoSurfaceThresholdTrack->addKey(Key::floatKey(0.70, 2));
-    isoSurfaceThresholdTrack->addKey(Key::floatKey(1.00, 3));
+    isoSurfaceThresholdTrack->addKey(Key::floatKey(0.00, 2));
+    isoSurfaceThresholdTrack->addKey(Key::floatKey(0.30, 2));
+    isoSurfaceThresholdTrack->addKey(Key::floatKey(1.00, 2));
 
 
     // Color track

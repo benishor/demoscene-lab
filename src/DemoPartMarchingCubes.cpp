@@ -8,9 +8,19 @@ namespace Acidrain {
 
 DemoPartMarchingCubes::DemoPartMarchingCubes(std::shared_ptr<Mesh> affectedMesh) {
     mesh = affectedMesh;
+
+    field.emitters.push_back(glm::vec4(0, 0.7, 0, 1));
+    field.emitters.push_back(glm::vec4(0, -0.7, 0, 1));
 }
 
 void DemoPartMarchingCubes::process(float normalizedTime) {
+
+    field.emitters[0].x = sin(normalizedTime * 2 * M_PI * 4);
+    field.emitters[0].z = cos(normalizedTime * 2 * M_PI * 4);
+
+    field.emitters[1].x = sin(normalizedTime * 2 * M_PI * 7);
+    field.emitters[1].z = cos(normalizedTime * 2 * M_PI * 3.5);
+
     grid.evaluateForces(field);
     grid.triangulate(*mesh.get(), minFieldValue);
 
@@ -162,12 +172,12 @@ void MarchingCubesGrid::addResultingFacets(Mesh& mesh, int cellType) {
 
 
 float ForceField::getFieldValueAt(const glm::vec3& position) const {
+    float result = 0;
 
-    glm::vec3 dp1 = glm::vec3(0.0, -0.7,  0.0) - position;
-    glm::vec3 dp2 = glm::vec3(0.0,  0.7,  0.0) - position;
+    for (auto& e : emitters)
+        result += 1.0f / glm::length(glm::vec3(e) - position);
 
-    return 1.0f / glm::length(dp1) +
-           1.0f / glm::length(dp2);
+    return result;
 }
 
 

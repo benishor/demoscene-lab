@@ -8,21 +8,22 @@ namespace Acidrain {
 
 struct ForceField {
     float getFieldValueAt(const glm::vec3& position) const;
+    std::vector<glm::vec4> emitters; // vec4 = position + strength
 };
 
 struct MarchingCubesGrid {
-    int xCells = 20;
-    int yCells = 20;
-    int zCells = 20;
+    int xCells = 50;
+    int yCells = 50;
+    int zCells = 50;
 
-    float xMin = -1;
-    float xMax =  1;
+    float xMin = -2;
+    float xMax =  2;
 
-    float yMin = -1;
-    float yMax =  1;
+    float yMin = -2;
+    float yMax =  2;
 
-    float zMin = -1;
-    float zMax =  1;
+    float zMin = -2;
+    float zMax =  2;
 
     // .w will hold field value for code size optimisation purposes
     std::vector<glm::vec4> gridVertices;

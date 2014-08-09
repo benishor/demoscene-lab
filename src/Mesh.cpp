@@ -73,7 +73,10 @@ void calculateNormals(Mesh& mesh) {
     for (auto& facet : mesh.facets) {
         glm::vec3 a = mesh.vertices[facet.b].position - mesh.vertices[facet.a].position;
         glm::vec3 b = mesh.vertices[facet.c].position - mesh.vertices[facet.a].position;
-        facet.normal = glm::normalize(glm::cross(a, b));
+        facet.normal = glm::cross(a, b);
+        if (glm::length(facet.normal) > 0.00001) {
+            facet.normal = glm::normalize(facet.normal);
+        }
 
         mesh.vertices[facet.a].normal += facet.normal;
         mesh.vertices[facet.b].normal += facet.normal;
