@@ -11,6 +11,7 @@ DemoPartMarchingCubes::DemoPartMarchingCubes(std::shared_ptr<Mesh> affectedMesh)
 
     field.emitters.push_back(glm::vec4(0, 0.7, 0, 1));
     field.emitters.push_back(glm::vec4(0, -0.7, 0, 1));
+    field.emitters.push_back(glm::vec4(0.3, -0.7, 0.3, 1));
 }
 
 void DemoPartMarchingCubes::process(float normalizedTime) {
@@ -21,10 +22,16 @@ void DemoPartMarchingCubes::process(float normalizedTime) {
     field.emitters[1].x = sin(normalizedTime * 2 * M_PI * 7);
     field.emitters[1].z = cos(normalizedTime * 2 * M_PI * 3.5);
 
+    field.emitters[2].y = 0.5 * sin(normalizedTime * 2 * M_PI * 4);
+    field.emitters[2].z = 0.8 * cos(normalizedTime * 2 * M_PI * 2);
+
     grid.evaluateForces(field);
     grid.triangulate(*mesh.get(), minFieldValue);
 
-    calculateNormals(*mesh.get());
+    for (auto& v : mesh->vertices)
+        v.normal = field.getFieldNormalAt(v.position);
+
+    // calculateNormals(*mesh.get());
 }
 
 void MarchingCubesGrid::evaluateForces(ForceField& field) {
@@ -151,7 +158,6 @@ glm::vec3 MarchingCubesGrid::intersection(int v1Index, int v2Index, float minFie
 
 
 void MarchingCubesGrid::addResultingFacets(Mesh& mesh, int cellType) {
-
     Facet f;
     Vertex v;
     int vertexOffset = mesh.vertices.size();
@@ -174,11 +180,28 @@ void MarchingCubesGrid::addResultingFacets(Mesh& mesh, int cellType) {
 float ForceField::getFieldValueAt(const glm::vec3& position) const {
     float result = 0;
 
-    for (auto& e : emitters)
-        result += 1.0f / glm::length(glm::vec3(e) - position);
+    for (auto& e : emitters) {
+        float dist = glm::length(glm::vec3(e) - position);
+        result += 1.0f / (dist * dist);
+    }
 
     return result;
 }
 
+
+glm::vec3 ForceField::getFieldNormalAt(const glm::vec3& position) const {
+    // Hello blackpawn! http://www.blackpawn.com/texts/metanormals/default.html
+    glm::vec3 normal = glm::vec3(0);
+
+    for (auto& e : emitters) {
+        float distance = glm::length(glm::vec3(e) - position);
+        float coefficient = 1.0f / (distance * distance * distance * distance);
+
+        glm::vec3 temp = (glm::vec3(e) - position) * 2.0f;
+        normal += temp * coefficient;
+    }
+
+    return glm::normalize(normal);
+}
 
 } // namespace Acidrain

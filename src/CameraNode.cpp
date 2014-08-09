@@ -23,6 +23,7 @@ void CameraNode::calculateLocalTransform() {
     projectionMatrix = glm::perspective(
                            fov,
                            4.0f / 3.0f,
+                           // 1920.f / 1080.0f,
                            0.1f,
                            100.0f
                        );

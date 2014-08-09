@@ -7,7 +7,9 @@
 namespace Acidrain {
 
 struct ForceField {
-    float getFieldValueAt(const glm::vec3& position) const;
+    float       getFieldValueAt(const glm::vec3& position) const;
+    glm::vec3   getFieldNormalAt(const glm::vec3& position) const;
+
     std::vector<glm::vec4> emitters; // vec4 = position + strength
 };
 

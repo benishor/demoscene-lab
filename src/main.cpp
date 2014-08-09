@@ -36,7 +36,7 @@ const char* ps2 = R"(
         // gl_FragColor = texture2D(mapDiffuse, gl_TexCoord[0].st + vec2(dptimen)) * 0.5 + texture2D(mapSpecular, gl_TexCoord[0].st - vec2(dptimen/2.0));
         // gl_FragColor = texture2D(mapDiffuse, gl_TexCoord[0].st);
 
-        vec3 lightDir = vec3(0, 0, 1);
+        vec3 lightDir = vec3(0, 0, -1);
         float NdotL = max(dot(normalize(normal), lightDir), 0.0);
 
         vec4 diffuse = vec4(1, 1, 1, 1) * vec4(0.8, 0.8, 0.8, 1);
@@ -175,6 +175,7 @@ int main() {
     // scene->tree->add(meshNode);
     scene->tree->add(meshNode2);
     // scene->tree->add(meshNode3);
+
     scene->tree->add(camNode);
     scene->tree->add(camNode2);
     scene->tree->add(lightNode);
@@ -221,9 +222,9 @@ int main() {
 
     isoSurfaceThresholdTrack->addControlledObject(&demoPartMarchingCubes.minFieldValue);
 
-    isoSurfaceThresholdTrack->addKey(Key::floatKey(0.00, 2));
-    isoSurfaceThresholdTrack->addKey(Key::floatKey(0.30, 2));
-    isoSurfaceThresholdTrack->addKey(Key::floatKey(1.00, 2));
+    isoSurfaceThresholdTrack->addKey(Key::floatKey(0.00, 3));
+    isoSurfaceThresholdTrack->addKey(Key::floatKey(0.30, 3));
+    isoSurfaceThresholdTrack->addKey(Key::floatKey(1.00, 3));
 
 
     // Color track
