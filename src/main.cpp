@@ -6,11 +6,14 @@ const char* vs = R"(
 	uniform mat4 mmtx;
 	uniform mat4 vmtx;
 	uniform mat4 pmtx;
+    varying vec3 normal;
 
     void main() {   
         gl_Position    = pmtx * vmtx * mmtx * gl_Vertex;
         gl_FrontColor  = gl_Color;
         gl_TexCoord[0] = gl_MultiTexCoord0;
+
+        normal = gl_Normal;
     } 
 )";
 
@@ -27,15 +30,27 @@ const char* ps2 = R"(
     uniform sampler2D mapDiffuse;
     uniform sampler2D mapSpecular;
     uniform float dptimen;
+    varying vec4 normal;
+
     void main (void) {
-        gl_FragColor = texture2D(mapDiffuse, gl_TexCoord[0].st + vec2(dptimen)) * 0.5 + texture2D(mapSpecular, gl_TexCoord[0].st - vec2(dptimen/2.0));
+        // gl_FragColor = texture2D(mapDiffuse, gl_TexCoord[0].st + vec2(dptimen)) * 0.5 + texture2D(mapSpecular, gl_TexCoord[0].st - vec2(dptimen/2.0));
         // gl_FragColor = texture2D(mapDiffuse, gl_TexCoord[0].st);
+
+        vec3 lightDir = vec3(0, 0, 1);
+        float NdotL = max(dot(normalize(normal), lightDir), 0.0);
+
+        vec4 diffuse = vec4(1, 1, 1, 1) * vec4(0.8, 0.8, 0.8, 1);
+        vec4 col =  NdotL * diffuse;
+
+        gl_FragColor = col;
     }
 )";
 
 
 using namespace Acidrain;
 using namespace std;
+
+const float DEMO_LENGTH_IN_SECONDS = 10;
 
 int main() {
 
@@ -68,15 +83,15 @@ int main() {
     // DemoData::meshes.push_back(MeshGenerator::grid(30, 30));
 
 
-    for (int i = 0; i < 6; i++) {
-        subdivide(DemoData::meshes[2]);
-    }
+    // for (int i = 0; i < 6; i++) {
+    //     subdivide(DemoData::meshes[2]);
+    // }
 
-    TextureGenerator texgen = TextureGenerator(256, 256);
-    // texgen.checkerBoard(0, 32, glm::vec4(1), glm::vec4(0));
-    // texgen.roll(0, 8, 8);
-    texgen.lens(0, 100);
-    mapXform(DemoData::meshes[2], texgen, 0, 0, -0.4);
+    // TextureGenerator texgen = TextureGenerator(256, 256);
+    // // texgen.checkerBoard(0, 32, glm::vec4(1), glm::vec4(0));
+    // // texgen.roll(0, 8, 8);
+    // texgen.lens(0, 100);
+    // mapXform(DemoData::meshes[2], texgen, 0, 0, -0.4);
 
 
     auto material = shared_ptr<Material>(new Material());
@@ -108,12 +123,16 @@ int main() {
 
     DemoPartClear demoPartClear;
     demoPartClear.startTime = 0;
-    demoPartClear.endTime = 4;
+    demoPartClear.endTime = DEMO_LENGTH_IN_SECONDS;
     demoPartClear.color = glm::vec4(0.1, 0, 0.2, 1);
-    
+
+    DemoPartMarchingCubes demoPartMarchingCubes(DemoData::meshes[2]);
+    demoPartMarchingCubes.startTime = 0;
+    demoPartMarchingCubes.endTime = DEMO_LENGTH_IN_SECONDS;
+
     DemoPartScene demoPartScene;
     demoPartScene.startTime = 0;
-    demoPartScene.endTime = 4;
+    demoPartScene.endTime = DEMO_LENGTH_IN_SECONDS;
     demoPartScene.cameraName = "cam1";
 
     Scene* scene = new Scene();
@@ -128,8 +147,8 @@ int main() {
     meshNode2->mesh      = DemoData::meshes[2];
     meshNode2->material  = DemoData::materials[1];
     meshNode2->position  = glm::vec3(0, 0, 0);
-    meshNode2->scale     = glm::vec3(0.8);
-    meshNode2->rotation  = glm::angleAxis(2.25f , glm::vec3(1.0f, 0.0f, 0.0f));
+    meshNode2->scale     = glm::vec3(1);
+    // meshNode2->rotation  = glm::angleAxis(2.25f , glm::vec3(1.0f, 0.0f, 0.0f));
 
     auto meshNode3 = shared_ptr<MeshNode>(new MeshNode());
     meshNode3->mesh      = DemoData::meshes[2];
@@ -139,7 +158,7 @@ int main() {
 
     auto camNode = shared_ptr<CameraNode>(new CameraNode());
     camNode->name 		= "cam1";
-    camNode->position 	= glm::vec3(0.3, 0, 0.5);
+    camNode->position 	= glm::vec3(0, 0, 1.5);
     camNode->target 	= glm::vec3(0, 0, 0);
     camNode->fov 		= 45;
 
@@ -159,6 +178,8 @@ int main() {
     scene->tree->add(camNode);
     scene->tree->add(camNode2);
     scene->tree->add(lightNode);
+
+
 
     // Position Track
     // auto posTrack = shared_ptr<AnimationTrack>(new Vec3Track());
@@ -194,6 +215,18 @@ int main() {
     // scaleTrack->addKey(Key::floatKey(0.76, 1));
     // scaleTrack->addKey(Key::floatKey(1.00, 2));
 
+    // Scale track
+    auto isoSurfaceThresholdTrack = shared_ptr<AnimationTrack>(new FloatTrack());
+    scene->timeline->tracks.push_back(isoSurfaceThresholdTrack);
+
+    isoSurfaceThresholdTrack->addControlledObject(&demoPartMarchingCubes.minFieldValue);
+
+    isoSurfaceThresholdTrack->addKey(Key::floatKey(0.00, 3));
+    isoSurfaceThresholdTrack->addKey(Key::floatKey(0.30, 1.8));
+    isoSurfaceThresholdTrack->addKey(Key::floatKey(0.50, 3));
+    isoSurfaceThresholdTrack->addKey(Key::floatKey(0.70, 2));
+    isoSurfaceThresholdTrack->addKey(Key::floatKey(1.00, 3));
+
 
     // Color track
     auto colorTrack = shared_ptr<AnimationTrack>(new FloatTrack());
@@ -210,12 +243,13 @@ int main() {
     // --------------------------------------------------------------------------------------
 
     Timer timer;
-    while (!window.shouldQuit() && timer.secondsSinceStart() < 4) {
+    while (!window.shouldQuit() && timer.secondsSinceStart() < DEMO_LENGTH_IN_SECONDS) {
 
         double elapsedSeconds = timer.secondsSinceStart();
 
         demoPartClear.process(demoPartClear.normalizeTime(elapsedSeconds));
         demoPartScene.process(demoPartScene.normalizeTime(elapsedSeconds));
+        demoPartMarchingCubes.process(demoPartMarchingCubes.normalizeTime(elapsedSeconds));
 
         window.present();
     }

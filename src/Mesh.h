@@ -36,6 +36,7 @@ struct Mesh {
 
     GLuint vboId = 0;
     float* vboData = nullptr;
+    int vboSizeInElements = 0;
 };
 
 void calculateNormals(Mesh& mesh);

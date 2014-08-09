@@ -7,12 +7,14 @@ set(HEADERS
    ${CMAKE_CURRENT_SOURCE_DIR}/DemoEngine.h
    ${CMAKE_CURRENT_SOURCE_DIR}/DemoPart.h
    ${CMAKE_CURRENT_SOURCE_DIR}/DemoPartClear.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/DemoPartMarchingCubes.h
    ${CMAKE_CURRENT_SOURCE_DIR}/DemoPartScene.h
    ${CMAKE_CURRENT_SOURCE_DIR}/FloatTrack.h
    ${CMAKE_CURRENT_SOURCE_DIR}/GLheaders.h
    ${CMAKE_CURRENT_SOURCE_DIR}/GLMheaders.h
    ${CMAKE_CURRENT_SOURCE_DIR}/IntegerTrack.h
    ${CMAKE_CURRENT_SOURCE_DIR}/LightNode.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/MarchingCubesTable.h
    ${CMAKE_CURRENT_SOURCE_DIR}/Material.h
    ${CMAKE_CURRENT_SOURCE_DIR}/Mesh.h
    ${CMAKE_CURRENT_SOURCE_DIR}/MeshGenerator.h
@@ -37,6 +39,7 @@ set(SOURCE
    ${CMAKE_CURRENT_SOURCE_DIR}/DemoData.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/DemoPart.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/DemoPartClear.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/DemoPartMarchingCubes.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/DemoPartScene.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/FloatTrack.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/IntegerTrack.cpp

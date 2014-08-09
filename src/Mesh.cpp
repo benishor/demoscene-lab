@@ -16,29 +16,39 @@ constexpr int sizeOfVertexInBytes() {
 
 void Mesh::render() {
     if (vboId == 0) {
-        vboData = new float[componentsInVertex() * facets.size() * 3];
-
-        int i = 0;
-        for (auto& f : facets) {
-            for (int j = 0; j < 3; j++) {
-                vboData[i++] = vertices[f.vertices[j]].position.x;
-                vboData[i++] = vertices[f.vertices[j]].position.y;
-                vboData[i++] = vertices[f.vertices[j]].position.z;
-                vboData[i++] = vertices[f.vertices[j]].normal.x;
-                vboData[i++] = vertices[f.vertices[j]].normal.y;
-                vboData[i++] = vertices[f.vertices[j]].normal.z;
-                vboData[i++] = f.textCoords[j].x;
-                vboData[i++] = f.textCoords[j].y;
-            }
-        }
-
         glGenBuffers(1, &vboId);
-        glBindBuffer(GL_ARRAY_BUFFER, vboId);
-        glBufferData(GL_ARRAY_BUFFER, sizeOfVertexInBytes() * facets.size() * 3, vboData, GL_DYNAMIC_DRAW);
-    } else {
-        glBindBuffer(GL_ARRAY_BUFFER, vboId);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeOfVertexInBytes() * facets.size() * 3, vboData);
     }
+
+    // construct data
+    if ((facets.size() * 3) > vboSizeInElements) {
+
+        if (vboData != nullptr)
+            delete [] vboData;
+
+        vboData = new float[componentsInVertex() * facets.size() * 3];
+        vboSizeInElements = facets.size() * 3;
+    }
+
+    // fill in buffer
+    int i = 0;
+    for (auto& f : facets) {
+        for (int j = 0; j < 3; j++) {
+            vboData[i++] = vertices[f.vertices[j]].position.x;
+            vboData[i++] = vertices[f.vertices[j]].position.y;
+            vboData[i++] = vertices[f.vertices[j]].position.z;
+            vboData[i++] = vertices[f.vertices[j]].normal.x;
+            vboData[i++] = vertices[f.vertices[j]].normal.y;
+            vboData[i++] = vertices[f.vertices[j]].normal.z;
+            vboData[i++] = f.textCoords[j].x;
+            vboData[i++] = f.textCoords[j].y;
+        }
+    }
+
+
+    glBindBuffer(GL_ARRAY_BUFFER, vboId);
+    glBufferData(GL_ARRAY_BUFFER, sizeOfVertexInBytes() * facets.size() * 3, vboData, GL_DYNAMIC_DRAW);
+
+    // glBufferSubData(GL_ARRAY_BUFFER, 0, sizeOfVertexInBytes() * facets.size() * 3, vboData);
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);

@@ -4,6 +4,7 @@
 
 namespace Acidrain {
 
+// http://en.wikipedia.org/wiki/Shading#Lighting
 enum class LightType {
     Directional,
     Point,
