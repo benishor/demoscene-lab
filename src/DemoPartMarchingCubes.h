@@ -14,9 +14,9 @@ struct ForceField {
 };
 
 struct MarchingCubesGrid {
-    int xCells = 50;
-    int yCells = 50;
-    int zCells = 50;
+    int xCells = 60;
+    int yCells = 60;
+    int zCells = 60;
 
     float xMin = -2;
     float xMax =  2;

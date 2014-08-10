@@ -47,6 +47,36 @@ const char* ps2 = R"(
 )";
 
 
+const char* vsEnvMap = R"(
+    uniform mat4 mmtx;
+    uniform mat4 vmtx;
+    uniform mat4 pmtx;
+
+    void main() {   
+        vec3 u = normalize( vec3(vmtx * mmtx * gl_Vertex) );
+        vec3 n = normalize( mat3(vmtx * mmtx) * gl_Normal );
+        vec3 r = reflect( u, n );
+        float m = 2.0 * sqrt( r.x*r.x + r.y*r.y + (r.z+1.0)*(r.z+1.0) );
+        gl_TexCoord[0].s = r.x/m + 0.5;
+        gl_TexCoord[0].t = r.y/m + 0.5;
+
+        gl_Position    = pmtx * vmtx * mmtx * gl_Vertex;
+        gl_FrontColor  = gl_Color;
+    } 
+)";
+
+
+const char* psEnvMap = R"(
+    uniform sampler2D mapDiffuse;
+    uniform sampler2D mapSpecular;
+
+    void main (void) {
+        gl_FragColor = 8.0 * (texture2D(mapDiffuse, gl_TexCoord[0].st) / 9.0f) + 1/9.0f;
+    }
+)";
+
+
+
 using namespace Acidrain;
 using namespace std;
 
@@ -70,9 +100,15 @@ int main() {
         .checkerBoard(0, 64, glm::vec4(1, 0.2, 0.2, 0.9), glm::vec4(0.1, 0.1, 0.3, 0.9))
         .getTexture(0)
     );
+    DemoData::textures.push_back(
+        TextureGenerator(256, 256)
+        .lens(0, 100)
+        .getTexture(0)
+    );
 
     DemoData::shaders.push_back(shared_ptr<Shader>(new Shader(vs, ps)));
     DemoData::shaders.push_back(shared_ptr<Shader>(new Shader(vs, ps2)));
+    DemoData::shaders.push_back(shared_ptr<Shader>(new Shader(vsEnvMap, psEnvMap)));
 
     DemoData::meshes.push_back(MeshGenerator::cube());
     DemoData::meshes.push_back(MeshGenerator::sphere(30, 30));
@@ -117,6 +153,17 @@ int main() {
 
     DemoData::materials.push_back(material2);
 
+
+    auto material3 = shared_ptr<Material>(new Material());
+    material3->shader = DemoData::shaders[2];
+    material3->textures[TextureRole::Diffuse] = DemoData::textures[2];
+    material3->textures[TextureRole::Specular] = DemoData::textures[1];
+    material3->transparent  = false;
+    material3->zBufferWrite = true;
+    material3->zBufferTest  = true;
+
+    DemoData::materials.push_back(material3);
+
     // --------------------------------------------------------------------------------------
     // Set up demo parts
     // --------------------------------------------------------------------------------------
@@ -145,7 +192,7 @@ int main() {
 
     auto meshNode2 = shared_ptr<MeshNode>(new MeshNode());
     meshNode2->mesh      = DemoData::meshes[2];
-    meshNode2->material  = DemoData::materials[1];
+    meshNode2->material  = DemoData::materials[2];
     meshNode2->position  = glm::vec3(0, 0, 0);
     meshNode2->scale     = glm::vec3(1);
     // meshNode2->rotation  = glm::angleAxis(2.25f , glm::vec3(1.0f, 0.0f, 0.0f));
@@ -158,7 +205,7 @@ int main() {
 
     auto camNode = shared_ptr<CameraNode>(new CameraNode());
     camNode->name 		= "cam1";
-    camNode->position 	= glm::vec3(0, 0, 1.5);
+    camNode->position 	= glm::vec3(0, 0.3, 1.5);
     camNode->target 	= glm::vec3(0, 0, 0);
     camNode->fov 		= 45;
 

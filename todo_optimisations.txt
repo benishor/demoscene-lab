@@ -8,3 +8,6 @@ Possible optimizations
 - glsl minifier on shader sources, preprocess step that generates minified source
 - optimize mesh generation (grid and cylinder can be mixed. possibly cone too)
 - get rid of smart pointers, get rid of deallocations, not nice but no point in wasting code space on dealloc 
+- ForceField's getFieldValueAt(const glm::vec3& position) and getFieldNormalAt(const glm::vec3& position) could be joined in order to save precious code space
+- MarchingCube's calculateIntersectionVertices could be implemented in a procedural fashion instead of unrolled loop
+- MarchingCube: switch to alternative (shorter) table, that should save some size.
