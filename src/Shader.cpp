@@ -37,32 +37,40 @@ void Shader::unuse() {
     glUseProgram(0);
 }
 
+
+int Shader::getUniform(const char* uniformName) {
+    if (uniformCache.count(uniformName) == 0) {
+        uniformCache[uniformName] = glGetUniformLocation(programId, uniformName);
+    }
+    return uniformCache[uniformName];
+}
+
 void Shader::setMatrixUniform(float* matrix, const char* uniformName) {
-    GLint location = glGetUniformLocation(programId, uniformName);
+    GLint location = getUniform(uniformName);
     if (location != -1)
         glUniformMatrix4fv(location, 1, false, matrix);
 }
 
 void Shader::setVec3Uniform(float* value, const char* uniformName) {
-    GLint location = glGetUniformLocation(programId, uniformName);
+    GLint location = getUniform(uniformName);
     if (location != -1)
         glUniform3fv(location, 1, value);
 }
 
 void Shader::setVec4Uniform(float* value, const char* uniformName) {
-    GLint location = glGetUniformLocation(programId, uniformName);
+    GLint location = getUniform(uniformName);
     if (location != -1)
         glUniform4fv(location, 1, value);
 }
 
 void Shader::setIntUniform(int value, const char* uniformName) {
-    GLint location = glGetUniformLocation(programId, uniformName);
+    GLint location = getUniform(uniformName);
     if (location != -1)
         glUniform1i(location, value);
 }
 
 void Shader::setFloatUniform(float value, const char* uniformName) {
-    GLint location = glGetUniformLocation(programId, uniformName);
+    GLint location = getUniform(uniformName);
     if (location != -1)
         glUniform1f(location, value);
 }

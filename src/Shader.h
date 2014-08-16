@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GLheaders.h>
+#include <map>
 
 namespace Acidrain {
     
@@ -13,6 +14,8 @@ public:
     void use();
     void unuse();
 
+    int getUniform(const char* uniformName);
+
     void setMatrixUniform(float* value, const char* uniformName);
     void setVec3Uniform(float* value, const char* uniformName);
     void setVec4Uniform(float* value, const char* uniformName);
@@ -22,6 +25,7 @@ public:
 private:
     GLuint programId;
     GLuint shaderIds[2];
+    std::map<const char*, int> uniformCache;
 };
 
 } // namespace Acidrain

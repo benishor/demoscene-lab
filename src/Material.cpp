@@ -62,7 +62,6 @@ void setMaterial(std::shared_ptr<Material>& material) {
 }
 
 void unsetMaterial(std::shared_ptr<Material>& material) {
-    material->shader->unuse();
 
     int textureUnit = 0;
     for (auto& kv : material->textures) {
@@ -72,6 +71,8 @@ void unsetMaterial(std::shared_ptr<Material>& material) {
         kv.second->unuse();
         textureUnit++;
     }
+
+    material->shader->unuse();
 
     if (material->transparent)
         glDisable(GL_BLEND);
