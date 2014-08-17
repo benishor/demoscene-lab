@@ -2,6 +2,7 @@
 #include <GLheaders.h>
 #include <GLMheaders.h>
 #include <SDL2/SDL_opengl.h>
+#include <DemoData.h>
 
 namespace Acidrain {
 
@@ -47,7 +48,9 @@ Window::Window(int w, int h, WindowType t)
     }
 
     SDL_GL_SetSwapInterval(1);
-    initOpenGL();
+
+    DemoData::WIDTH  = width;
+    DemoData::HEIGHT = height;
 }
 
 Window::~Window() {
@@ -71,32 +74,6 @@ bool Window::shouldQuit() {
     }
 
     return false;
-}
-
-void Window::initOpenGL() {
-    // Set up our viewing matrix
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    const float ASPECT_RATIO = width / (float)height;
-    const float FIELD_OF_VIEW_IN_DEGREES = 45.0;
-    const float Z_NEAR = 0.2;
-    const float Z_FAR = 255;
-
-    glm::mat4 perspectiveMatrix = glm::perspective(
-                                      FIELD_OF_VIEW_IN_DEGREES,
-                                      ASPECT_RATIO,
-                                      Z_NEAR,
-                                      Z_FAR
-                                  );
-    glMultMatrixf(&perspectiveMatrix[0][0]);
-
-    // gluPerspective(FIELD_OF_VIEW_IN_DEGREES, ASPECT_RATIO, Z_NEAR, Z_FAR);
-
-
-    // No transformations on the model
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
 }
 
 } // namespace Acidrain

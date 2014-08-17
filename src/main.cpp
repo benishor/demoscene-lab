@@ -46,6 +46,13 @@ const char* ps2 = R"(
     }
 )";
 
+const char* ps3 = R"(
+    uniform sampler2D mapDiffuse;
+    void main (void) {
+        gl_FragColor = texture2D(mapDiffuse, gl_TexCoord[0].st);
+    }
+)";
+
 
 const char* vsEnvMap = R"(
     uniform mat4 mmtx;
@@ -84,11 +91,15 @@ const float DEMO_LENGTH_IN_SECONDS = 10;
 
 int main() {
 
-    Window window(800, 600, WindowType::Windowed);
+    Window window(1024, 768, WindowType::Windowed);
 
     // --------------------------------------------------------------------------------------
     // Load resources
     // --------------------------------------------------------------------------------------
+
+    DemoData::fbos.push_back(
+        shared_ptr<Fbo>(new Fbo(512, 512))
+    );
 
     DemoData::textures.push_back(
         TextureGenerator(256, 256)
@@ -109,6 +120,7 @@ int main() {
     DemoData::shaders.push_back(shared_ptr<Shader>(new Shader(vs, ps)));
     DemoData::shaders.push_back(shared_ptr<Shader>(new Shader(vs, ps2)));
     DemoData::shaders.push_back(shared_ptr<Shader>(new Shader(vsEnvMap, psEnvMap)));
+    DemoData::shaders.push_back(shared_ptr<Shader>(new Shader(vs, ps3)));
 
     DemoData::meshes.push_back(MeshGenerator::cube());
     DemoData::meshes.push_back(MeshGenerator::sphere(30, 30));
@@ -164,6 +176,15 @@ int main() {
 
     DemoData::materials.push_back(material3);
 
+    auto material4 = shared_ptr<Material>(new Material());
+    material4->shader = DemoData::shaders[3];
+    material4->textures[TextureRole::Diffuse] = DemoData::fbos[0]->getTexture();
+    material4->transparent  = false;
+    material4->zBufferWrite = true;
+    material4->zBufferTest  = true;
+
+    DemoData::materials.push_back(material4);
+
     // --------------------------------------------------------------------------------------
     // Set up demo parts
     // --------------------------------------------------------------------------------------
@@ -187,12 +208,12 @@ int main() {
 
     auto meshNode = shared_ptr<MeshNode>(new MeshNode());
     meshNode->mesh 		= DemoData::meshes[0];
-    meshNode->material 	= DemoData::materials[0];
+    meshNode->material 	= DemoData::materials[3];
     meshNode->position  = glm::vec3(1.5, 0, 0);
 
     auto meshNode2 = shared_ptr<MeshNode>(new MeshNode());
     meshNode2->mesh      = DemoData::meshes[2];
-    meshNode2->material  = DemoData::materials[2];
+    meshNode2->material  = DemoData::materials[1];
     meshNode2->position  = glm::vec3(0, 0, 0);
     meshNode2->scale     = glm::vec3(1);
     // meshNode2->rotation  = glm::angleAxis(2.25f , glm::vec3(1.0f, 0.0f, 0.0f));
@@ -205,8 +226,8 @@ int main() {
 
     auto camNode = shared_ptr<CameraNode>(new CameraNode());
     camNode->name 		= "cam1";
-    camNode->position 	= glm::vec3(0, 0.3, 1.5);
-    camNode->target 	= glm::vec3(0, 0, 0);
+    camNode->position 	= glm::vec3(0, 0.6, 1.5);
+    camNode->target 	= glm::vec3(0, -0.2, 0);
     camNode->fov 		= 45;
 
     auto camNode2 = shared_ptr<CameraNode>(new CameraNode());
@@ -228,6 +249,23 @@ int main() {
     scene->tree->add(lightNode);
 
 
+
+    // SCENE 2
+    DemoPartScene demoPartScene2;
+    demoPartScene2.startTime = 0;
+    demoPartScene2.endTime = DEMO_LENGTH_IN_SECONDS;
+    demoPartScene2.cameraName = "cam1";
+
+    Scene* scene2 = new Scene();
+    demoPartScene2.scene = shared_ptr<Scene>(scene2);
+
+    scene2->tree->add(meshNode);
+    // scene2->tree->add(meshNode3);
+    scene2->tree->add(camNode);
+
+    // Render to texture
+    DemoPartRenderToTexture demoPartRenderToTexture(0, RenderToTextureAction::Start);
+    DemoPartRenderToTexture demoPartRenderToTextureStop(0, RenderToTextureAction::Stop);
 
     // Position Track
     // auto posTrack = shared_ptr<AnimationTrack>(new Vec3Track());
@@ -293,9 +331,19 @@ int main() {
 
         double elapsedSeconds = timer.secondsSinceStart();
 
+        demoPartRenderToTexture.process(demoPartRenderToTexture.normalizeTime(elapsedSeconds));
+
+        demoPartMarchingCubes.process(demoPartMarchingCubes.normalizeTime(elapsedSeconds));
+
+
         demoPartClear.process(demoPartClear.normalizeTime(elapsedSeconds));
         demoPartScene.process(demoPartScene.normalizeTime(elapsedSeconds));
-        demoPartMarchingCubes.process(demoPartMarchingCubes.normalizeTime(elapsedSeconds));
+
+        demoPartRenderToTextureStop.process(demoPartRenderToTextureStop.normalizeTime(elapsedSeconds));
+
+        demoPartClear.process(demoPartClear.normalizeTime(elapsedSeconds));
+        demoPartScene2.process(demoPartScene2.normalizeTime(elapsedSeconds));
+
 
         window.present();
     }

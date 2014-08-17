@@ -4,6 +4,8 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <DemoData.h>
+
 namespace Acidrain {
 
 CameraNode::CameraNode() {
@@ -22,7 +24,7 @@ void CameraNode::calculateLocalTransform() {
 
     projectionMatrix = glm::perspective(
                            fov,
-                           4.0f / 3.0f,
+                           DemoData::WIDTH / static_cast<float>(DemoData::HEIGHT),
                            0.1f,
                            100.0f
                        );

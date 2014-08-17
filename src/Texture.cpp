@@ -3,7 +3,7 @@
 namespace Acidrain {
 
 Texture::Texture(int w, int h, unsigned char* buffer)
-    : width(w), height(h) {
+    : width(w), height(h), destroyable(true) {
 
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_2D, textureId);
@@ -29,8 +29,14 @@ Texture::Texture(int w, int h, unsigned char* buffer)
 }
 
 
+Texture::Texture(GLuint textId, int w, int h)
+    : textureId(textId), width(w), height(h), destroyable(false) {
+}
+
+
 Texture::~Texture() {
-    glDeleteTextures(1, &textureId);
+    if (destroyable)
+        glDeleteTextures(1, &textureId);
 }
 
 int Texture::getWidth() const {
@@ -47,7 +53,7 @@ void Texture::use() {
 
 void Texture::unuse() {
     glBindTexture(GL_TEXTURE_2D, 0);
-}    
+}
 
 } // namespace Acidrain
 

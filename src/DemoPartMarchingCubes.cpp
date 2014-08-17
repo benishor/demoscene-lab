@@ -12,7 +12,7 @@ DemoPartMarchingCubes::DemoPartMarchingCubes(std::shared_ptr<Mesh> affectedMesh)
     field.emitters.push_back(glm::vec4(0, 0.7, 0, 1));
     field.emitters.push_back(glm::vec4(0, -0.7, 0, 1));
     field.emitters.push_back(glm::vec4(0.3, -0.7, 0.3, 1));
-    field.emitters.push_back(glm::vec4(-0.5, 0.7, -0.3, 1));
+    // field.emitters.push_back(glm::vec4(-0.5, 0.7, -0.3, 1));
 }
 
 void DemoPartMarchingCubes::process(float normalizedTime) {
@@ -27,8 +27,8 @@ void DemoPartMarchingCubes::process(float normalizedTime) {
     field.emitters[2].y = 0.5 * sin(normalizedTime * 2 * M_PI * 4);
     field.emitters[2].z = 0.8 * cos(normalizedTime * 2 * M_PI * 2);
 
-    field.emitters[3].y = 0.8 * cos(normalizedTime * 2 * M_PI * 3);
-    field.emitters[3].z = 0.2 * sin(normalizedTime * 2 * M_PI * 8);
+    // field.emitters[3].y = 0.8 * cos(normalizedTime * 2 * M_PI * 3);
+    // field.emitters[3].z = 0.2 * sin(normalizedTime * 2 * M_PI * 8);
 
     grid.evaluateForces(field);
     grid.triangulate(*mesh.get(), minFieldValue);

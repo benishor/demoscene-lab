@@ -18,14 +18,13 @@ public:
     bool shouldQuit();
 
 private:
-    void initOpenGL();
 
-    int width;
-    int height;
-    WindowType type;
+    int             width;
+    int             height;
+    WindowType      type;
 
-    SDL_Window* displayWindow;
-    SDL_GLContext glContext;
+    SDL_Window*     displayWindow;
+    SDL_GLContext   glContext;
 };
 
 } // namespace Acidrain

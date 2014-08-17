@@ -4,6 +4,7 @@
 #include <DemoPartScene.h>
 #include <DemoPartClear.h>
 #include <DemoPartMarchingCubes.h>
+#include <DemoPartRenderToTexture.h>
 #include <TextureGenerator.h>
 #include <MeshGenerator.h>
 #include <MeshNode.h>
