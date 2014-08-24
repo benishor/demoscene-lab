@@ -30,7 +30,7 @@ const char* ps2 = R"(
     uniform sampler2D mapDiffuse;
     uniform sampler2D mapSpecular;
     uniform float dptimen;
-    varying vec4 normal;
+    varying vec3 normal;
 
     void main (void) {
         // gl_FragColor = texture2D(mapDiffuse, gl_TexCoord[0].st + vec2(dptimen)) * 0.5 + texture2D(mapSpecular, gl_TexCoord[0].st - vec2(dptimen/2.0));

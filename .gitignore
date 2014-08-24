@@ -21,6 +21,8 @@
 *.app
 main
 
+main.map
+
 # build directory
 build
 
