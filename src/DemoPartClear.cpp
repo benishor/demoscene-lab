@@ -7,7 +7,7 @@ void DemoPartClear::process(float normalizedTime) {
 
     glClearColor(color.r, color.g, color.b, color.a);
 
-    GLbitfield mask;
+    GLbitfield mask = 0;
     if (clearDepth)
         mask |= GL_DEPTH_BUFFER_BIT;
 

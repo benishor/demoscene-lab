@@ -406,11 +406,9 @@ void subdivide(std::shared_ptr<Mesh> mesh) {
         mesh->facets[facetIndex].vertices[1] = subdividedVertices[indexInMap(f.vertices[1], f.vertices[2])];
         mesh->facets[facetIndex].vertices[2] = subdividedVertices[indexInMap(f.vertices[2], f.vertices[0])];
 
-        glm::vec2 oldTextCoords[3] = f.textCoords;
-
-        mesh->facets[facetIndex].textCoords[0] = (oldTextCoords[0] + oldTextCoords[1]) / 2.0f;
-        mesh->facets[facetIndex].textCoords[1] = (oldTextCoords[1] + oldTextCoords[2]) / 2.0f;
-        mesh->facets[facetIndex].textCoords[2] = (oldTextCoords[2] + oldTextCoords[0]) / 2.0f;
+        mesh->facets[facetIndex].textCoords[0] = (oldFacets[facetIndex].textCoords[0] + oldFacets[facetIndex].textCoords[1]) / 2.0f;
+        mesh->facets[facetIndex].textCoords[1] = (oldFacets[facetIndex].textCoords[1] + oldFacets[facetIndex].textCoords[2]) / 2.0f;
+        mesh->facets[facetIndex].textCoords[2] = (oldFacets[facetIndex].textCoords[2] + oldFacets[facetIndex].textCoords[0]) / 2.0f;
 
         facetIndex++;
     }

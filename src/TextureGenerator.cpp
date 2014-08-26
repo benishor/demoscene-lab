@@ -79,7 +79,7 @@ TextureGenerator& TextureGenerator::envMap(unsigned char layer, unsigned char si
 TextureGenerator& TextureGenerator::lens(unsigned char layer, unsigned char size) {
     uint32_t* input = reinterpret_cast<uint32_t*>(layers[layer]);
 
-    Colour col = vec4(col);
+    Colour col = vec4(0);
 
     int sizeSquared = size * size;
     double c;
@@ -90,7 +90,7 @@ TextureGenerator& TextureGenerator::lens(unsigned char layer, unsigned char size
             int rsquare = rx * rx + ry * ry;
 
             if (rsquare <= sizeSquared) {
-                double r = sqrt(static_cast<double>(rsquare)) / static_cast<double>(size);
+                double r = sqrt(rsquare) / static_cast<double>(size);
                 c = 1 - r;
                 c = c * c;
                 if (r > 1)

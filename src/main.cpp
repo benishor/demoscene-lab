@@ -322,6 +322,7 @@ int main() {
     colorTrack->addKey(Key::floatKey(0.50, 0.3));
     colorTrack->addKey(Key::floatKey(1.00, 0.1));
 
+
     // --------------------------------------------------------------------------------------
     // Run demo
     // --------------------------------------------------------------------------------------
@@ -334,7 +335,6 @@ int main() {
         demoPartRenderToTexture.process(demoPartRenderToTexture.normalizeTime(elapsedSeconds));
 
         demoPartMarchingCubes.process(demoPartMarchingCubes.normalizeTime(elapsedSeconds));
-
 
         demoPartClear.process(demoPartClear.normalizeTime(elapsedSeconds));
         demoPartScene.process(demoPartScene.normalizeTime(elapsedSeconds));
