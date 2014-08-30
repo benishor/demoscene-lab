@@ -1,12 +1,12 @@
 #ifdef __APPLE__
     #define NO_SDL_GLEXT
 #endif
-#include <SDL2/SDL_opengl.h>
 
 #include <Window.h>
 #include <GLheaders.h>
 #include <GLMheaders.h>
 #include <DemoData.h>
+#include <SDL2/SDL_opengl.h>
 
 namespace Acidrain {
 

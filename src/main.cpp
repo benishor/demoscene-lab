@@ -52,7 +52,7 @@ int main() {
     auto planeNode = shared_ptr<MeshNode>(new MeshNode());
     planeNode->mesh      = DemoData::meshes[2];
     planeNode->material  = DemoData::materials[0];
-    planeNode->position  = glm::vec3(0, -1, 0);
+    planeNode->position  = glm::vec3(0, 0, 0);
     planeNode->scale     = glm::vec3(4);
     planeNode->rotation  = glm::angleAxis(3.141529f / 2.0f , glm::vec3(1.0f, 0.0f, 0.0f));
 
