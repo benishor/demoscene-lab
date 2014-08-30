@@ -11,7 +11,13 @@ enum class ShaderConstantType {
     ViewMatrix,
     ProjectionMatrix,
     ModelToWorldMatrix,
-    DemoPartNormalizedTime
+    NormalMatrix,
+    WorldToLightMatrix,
+    LightProjectionMatrix,
+    ShadowBiasMatrix,
+    ShadowMatrix,
+    DemoPartNormalizedTime,
+    LightPositionInEyeSpace
 };
 
 class ShaderConstantNameResolver {

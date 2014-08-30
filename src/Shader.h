@@ -16,7 +16,8 @@ public:
 
     int getUniform(const char* uniformName);
 
-    void setMatrixUniform(float* value, const char* uniformName);
+    void setMatrix3Uniform(float* value, const char* uniformName);
+    void setMatrix4Uniform(float* value, const char* uniformName);
     void setVec3Uniform(float* value, const char* uniformName);
     void setVec4Uniform(float* value, const char* uniformName);
     void setFloatUniform(float value, const char* uniformName);

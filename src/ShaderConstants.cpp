@@ -7,7 +7,13 @@ const char* ShaderConstantNameResolver::nameFor(const ShaderConstantType& type) 
         case ShaderConstantType::ViewMatrix: return "vmtx";
         case ShaderConstantType::ProjectionMatrix: return "pmtx";
         case ShaderConstantType::ModelToWorldMatrix: return "mmtx";
+        case ShaderConstantType::NormalMatrix: return "nmtx";
         case ShaderConstantType::DemoPartNormalizedTime: return "dptimen";
+        case ShaderConstantType::WorldToLightMatrix: return "wlmtx";
+        case ShaderConstantType::LightProjectionMatrix: return "lpmtx";
+        case ShaderConstantType::ShadowBiasMatrix: return "sbmtx";
+        case ShaderConstantType::ShadowMatrix: return "smtx";
+        case ShaderConstantType::LightPositionInEyeSpace: return "lPosEye";
         default: return "";
     }
 }
@@ -28,19 +34,36 @@ void ShaderConstants::add(ShaderConstantType type, void* value) {
 
 void ShaderConstants::set(Shader& shader) {
     for (auto& kv : constants) {
+
+        const char* uniformName = ShaderConstantNameResolver::nameFor(kv.first);
+
         switch (kv.first) {
-            case ShaderConstantType::ViewMatrix:
-            case ShaderConstantType::ProjectionMatrix:
-            case ShaderConstantType::ModelToWorldMatrix: {
-                const char* uniformName = ShaderConstantNameResolver::nameFor(kv.first);
-                shader.setMatrixUniform(reinterpret_cast<float*>(kv.second), uniformName);
+            case ShaderConstantType::NormalMatrix: {
+                shader.setMatrix3Uniform(reinterpret_cast<float*>(kv.second), uniformName);
                 break;
             }
+
+            case ShaderConstantType::ViewMatrix:
+            case ShaderConstantType::ProjectionMatrix:
+            case ShaderConstantType::ModelToWorldMatrix:
+            case ShaderConstantType::WorldToLightMatrix:
+            case ShaderConstantType::LightProjectionMatrix:
+            case ShaderConstantType::ShadowBiasMatrix:
+            case ShaderConstantType::ShadowMatrix: {
+                shader.setMatrix4Uniform(reinterpret_cast<float*>(kv.second), uniformName);
+                break;
+            }
+
             case ShaderConstantType::DemoPartNormalizedTime: {
-                const char* uniformName = ShaderConstantNameResolver::nameFor(kv.first);
                 shader.setFloatUniform(*reinterpret_cast<float*>(kv.second), uniformName);
                 break;
             }
+
+            case ShaderConstantType::LightPositionInEyeSpace: {
+                shader.setVec3Uniform(reinterpret_cast<float*>(kv.second), uniformName);
+                break;
+            }
+
             default:
                 break;
         }

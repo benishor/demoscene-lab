@@ -32,7 +32,7 @@ struct Mesh {
     std::vector<Facet>  facets;
     std::vector<Edge>   edges;
 
-    void render();
+    void render(bool flatShaded);
 
     GLuint vboId = 0;
     float* vboData = nullptr;

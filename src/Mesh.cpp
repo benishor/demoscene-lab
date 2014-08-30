@@ -14,7 +14,7 @@ constexpr int sizeOfVertexInBytes() {
     return componentsInVertex() * sizeof(float);
 }
 
-void Mesh::render() {
+void Mesh::render(bool flatShaded) {
     if (vboId == 0) {
         glGenBuffers(1, &vboId);
     }
@@ -36,9 +36,15 @@ void Mesh::render() {
             vboData[i++] = vertices[f.vertices[j]].position.x;
             vboData[i++] = vertices[f.vertices[j]].position.y;
             vboData[i++] = vertices[f.vertices[j]].position.z;
-            vboData[i++] = vertices[f.vertices[j]].normal.x;
-            vboData[i++] = vertices[f.vertices[j]].normal.y;
-            vboData[i++] = vertices[f.vertices[j]].normal.z;
+            if (flatShaded) {
+                vboData[i++] = f.normal.x;
+                vboData[i++] = f.normal.y;
+                vboData[i++] = f.normal.z;
+            } else {
+                vboData[i++] = vertices[f.vertices[j]].normal.x;
+                vboData[i++] = vertices[f.vertices[j]].normal.y;
+                vboData[i++] = vertices[f.vertices[j]].normal.z;
+            }
             vboData[i++] = f.textCoords[j].x;
             vboData[i++] = f.textCoords[j].y;
         }

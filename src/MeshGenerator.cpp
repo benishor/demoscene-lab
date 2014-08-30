@@ -26,44 +26,60 @@ void addFacet(Mesh& m, int a, int b, int c, float u1, float v1, float u2, float 
     if (edge3Visible) m.edges.push_back({c, a});
 }
 
+void addFacet(Mesh& m, int a, int b, int c, float u1, float v1, float u2, float v2, float u3, float v3, bool edge1Visible, bool edge2Visible, bool edge3Visible, float nx, float ny, float nz) {
+    Facet f;
+    f.a = a; f.b = b; f.c = c;
+    f.textCoords[0] = glm::vec2(u1, v1);
+    f.textCoords[1] = glm::vec2(u2, v2);
+    f.textCoords[2] = glm::vec2(u3, v3);
+    f.normal.x = nx;
+    f.normal.y = ny;
+    f.normal.z = nz;
+    m.facets.push_back(f);
+
+    if (edge1Visible) m.edges.push_back({a, b});
+    if (edge2Visible) m.edges.push_back({b, c});
+    if (edge3Visible) m.edges.push_back({c, a});
+}
+
 std::shared_ptr<Mesh> MeshGenerator::cube() {
     Mesh* result = new Mesh;
 
     addVertex(*result, -0.5, -0.5, -0.5);
-    addVertex(*result, 0.5, -0.5, -0.5);
-    addVertex(*result, 0.5,  0.5, -0.5);
+    addVertex(*result,  0.5, -0.5, -0.5);
+    addVertex(*result,  0.5,  0.5, -0.5);
     addVertex(*result, -0.5,  0.5, -0.5);
 
     addVertex(*result, -0.5, -0.5,  0.5);
-    addVertex(*result, 0.5, -0.5,  0.5);
-    addVertex(*result, 0.5,  0.5,  0.5);
+    addVertex(*result,  0.5, -0.5,  0.5);
+    addVertex(*result,  0.5,  0.5,  0.5);
     addVertex(*result, -0.5,  0.5,  0.5);
 
     // back
-    addFacet(*result, 0, 2, 1, 1, 0, 0, 1, 0, 0, false, true, true);
-    addFacet(*result, 2, 0, 3, 0, 1, 1, 0, 1, 1, false, true, true);
+    addFacet(*result, 0, 2, 1, 1, 0, 0, 1, 0, 0, false, true, true, 0, 0, -1);
+    addFacet(*result, 2, 0, 3, 0, 1, 1, 0, 1, 1, false, true, true, 0, 0, -1);
 
     // front
-    addFacet(*result, 5, 7, 4, 1, 0, 0, 1, 0, 0, false, true, true);
-    addFacet(*result, 7, 5, 6, 0, 1, 1, 0, 1, 1, false, true, true);
+    addFacet(*result, 5, 7, 4, 1, 0, 0, 1, 0, 0, false, true, true, 0, 0, 1);
+    addFacet(*result, 7, 5, 6, 0, 1, 1, 0, 1, 1, false, true, true, 0, 0, 1);
 
     // right side
-    addFacet(*result, 1, 6, 5, 1, 0, 0, 1, 0, 0, false, true, true);
-    addFacet(*result, 6, 1, 2, 0, 1, 1, 0, 1, 1, false, true, true);
+    addFacet(*result, 1, 6, 5, 1, 0, 0, 1, 0, 0, false, true, true, 1, 0, 0);
+    addFacet(*result, 6, 1, 2, 0, 1, 1, 0, 1, 1, false, true, true, 1, 0, 0);
 
     // left side
-    addFacet(*result, 4, 3, 0, 1, 0, 0, 1, 0, 0, false, true, true);
-    addFacet(*result, 3, 4, 7, 0, 1, 1, 0, 1, 1, false, true, true);
+    addFacet(*result, 4, 3, 0, 1, 0, 0, 1, 0, 0, false, true, true, -1, 0, 0);
+    addFacet(*result, 3, 4, 7, 0, 1, 1, 0, 1, 1, false, true, true, -1, 0, 0);
 
     // bottom
-    addFacet(*result, 4, 1, 5, 1, 0, 0, 1, 0, 0, false, true, true);
-    addFacet(*result, 1, 4, 0, 0, 1, 1, 0, 1, 1, false, true, true);
+    addFacet(*result, 4, 1, 5, 1, 0, 0, 1, 0, 0, false, true, true, 0, -1, 0);
+    addFacet(*result, 1, 4, 0, 0, 1, 1, 0, 1, 1, false, true, true, 0, -1, 0);
 
     // top
-    addFacet(*result, 3, 6, 2, 1, 0, 0, 1, 0, 0, false, true, true);
-    addFacet(*result, 6, 3, 7, 0, 1, 1, 0, 1, 1, false, true, true);
+    addFacet(*result, 3, 6, 2, 1, 0, 0, 1, 0, 0, false, true, true, 0, 1, 0);
+    addFacet(*result, 6, 3, 7, 0, 1, 1, 0, 1, 1, false, true, true, 0, 1, 0);
 
-    calculateNormals(*result);
+    // calculateNormals(*result);
     return std::shared_ptr<Mesh>(result);
 }
 
@@ -375,27 +391,27 @@ void subdivide(std::shared_ptr<Mesh> mesh) {
 
         // add new facets
         addFacet(*mesh,
-                 subdividedVertices[indexInMap(f.vertices[0], f.vertices[1])], 
-                 f.vertices[1], 
-                 subdividedVertices[indexInMap(f.vertices[1], f.vertices[2])], 
+                 subdividedVertices[indexInMap(f.vertices[0], f.vertices[1])],
+                 f.vertices[1],
+                 subdividedVertices[indexInMap(f.vertices[1], f.vertices[2])],
                  (f.textCoords[0].x + f.textCoords[1].x) / 2.0f, (f.textCoords[0].y + f.textCoords[1].y) / 2.0f,
                  f.textCoords[1].x, f.textCoords[1].y,
                  (f.textCoords[1].x + f.textCoords[2].x) / 2.0f, (f.textCoords[1].y + f.textCoords[2].y) / 2.0f,
                  false, false, false);
 
         addFacet(*mesh,
-                 subdividedVertices[indexInMap(f.vertices[1], f.vertices[2])], 
-                 f.vertices[2], 
-                 subdividedVertices[indexInMap(f.vertices[2], f.vertices[0])], 
+                 subdividedVertices[indexInMap(f.vertices[1], f.vertices[2])],
+                 f.vertices[2],
+                 subdividedVertices[indexInMap(f.vertices[2], f.vertices[0])],
                  (f.textCoords[1].x + f.textCoords[2].x) / 2.0f, (f.textCoords[1].y + f.textCoords[2].y) / 2.0f,
                  f.textCoords[2].x, f.textCoords[2].y,
                  (f.textCoords[2].x + f.textCoords[0].x) / 2.0f, (f.textCoords[2].y + f.textCoords[0].y) / 2.0f,
                  false, false, false);
 
         addFacet(*mesh,
-                 subdividedVertices[indexInMap(f.vertices[2], f.vertices[0])], 
-                 f.vertices[0], 
-                 subdividedVertices[indexInMap(f.vertices[0], f.vertices[1])], 
+                 subdividedVertices[indexInMap(f.vertices[2], f.vertices[0])],
+                 f.vertices[0],
+                 subdividedVertices[indexInMap(f.vertices[0], f.vertices[1])],
                  (f.textCoords[2].x + f.textCoords[0].x) / 2.0f, (f.textCoords[2].y + f.textCoords[0].y) / 2.0f,
                  f.textCoords[0].x, f.textCoords[0].y,
                  (f.textCoords[0].x + f.textCoords[1].x) / 2.0f, (f.textCoords[0].y + f.textCoords[1].y) / 2.0f,
