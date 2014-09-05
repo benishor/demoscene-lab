@@ -93,5 +93,10 @@ void calculateNormals(Mesh& mesh) {
         vertex.normal = glm::normalize(vertex.normal);
 }
 
+void copy(const Mesh& src, Mesh& dst) {
+    dst.edges = src.edges;
+    dst.vertices = src.vertices;
+    dst.facets = src.facets;
+}
 
 } // namespace Acidrain

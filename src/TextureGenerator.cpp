@@ -90,8 +90,7 @@ TextureGenerator& TextureGenerator::lens(unsigned char layer, unsigned char size
             int rsquare = rx * rx + ry * ry;
 
             if (rsquare <= sizeSquared) {
-                // double r = sqrt(static_cast<double>rsquare) / static_cast<double>(size);
-                double r  = 0;
+                double r = ::sqrt(rsquare) / static_cast<double>(size);
                 c = 1 - r;
                 c = c * c;
                 if (r > 1)

@@ -40,5 +40,6 @@ struct Mesh {
 };
 
 void calculateNormals(Mesh& mesh);
+void copy(const Mesh& src, Mesh& dst);
 
 } // namespace Acidrain

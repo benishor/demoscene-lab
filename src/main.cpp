@@ -1,6 +1,7 @@
 #include <Window.h>
 #include <Timer.h>
 #include <DemoEngine.h>
+#include "Operator.h"
 
 using namespace Acidrain;
 using namespace std;
@@ -9,6 +10,7 @@ const float DEMO_LENGTH_IN_SECONDS = 10;
 
 int main() {
 
+    setupOctopussy();
     Window window(1024, 768, WindowType::Windowed);
 
     // --------------------------------------------------------------------------------------
