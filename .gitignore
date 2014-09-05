@@ -28,3 +28,6 @@ build
 
 # docs directory
 docs
+
+# CLion
+.idea
