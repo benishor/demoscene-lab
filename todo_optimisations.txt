@@ -11,3 +11,5 @@ Possible optimizations
 - ForceField's getFieldValueAt(const glm::vec3& position) and getFieldNormalAt(const glm::vec3& position) could be joined in order to save precious code space
 - MarchingCube's calculateIntersectionVertices could be implemented in a procedural fashion instead of unrolled loop
 - MarchingCube: switch to alternative (shorter) table, that should save some size.
+
+- add glm as git submodule from https://github.com/g-truc/glm instead of relying on the system provided package
