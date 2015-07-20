@@ -25,8 +25,8 @@ void CameraNode::calculateLocalTransform() {
     projectionMatrix = glm::perspective(
                            fov,
                            DemoData::WIDTH / static_cast<float>(DemoData::HEIGHT),
-                           0.1f,
-                           100.0f
+                           2.f,
+                           100000.0f
                        );
 }
 

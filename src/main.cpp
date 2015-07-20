@@ -17,10 +17,14 @@ int main() {
 
     DemoData::meshes.push_back(MeshGenerator::sphere(30, 30));
     DemoData::meshes.push_back(MeshGenerator::sphere(30, 30));
-    // DemoData::meshes.push_back(MeshGenerator::cube());
     DemoData::meshes.push_back(MeshGenerator::grid(30, 30));
+    DemoData::meshes.push_back(MeshGenerator::cube());
 
     auto material = shared_ptr<Material>(new Material());
+    DemoData::materials.push_back(material);
+
+    material = make_shared<Material>();
+    material->castsShadows = false;
     DemoData::materials.push_back(material);
 
 
@@ -51,10 +55,17 @@ int main() {
 
     auto planeNode = shared_ptr<MeshNode>(new MeshNode());
     planeNode->mesh      = DemoData::meshes[2];
-    planeNode->material  = DemoData::materials[0];
+    planeNode->material  = DemoData::materials[1];
     planeNode->position  = glm::vec3(0, 0, 0);
     planeNode->scale     = glm::vec3(4);
     planeNode->rotation  = glm::angleAxis(3.141529f / 2.0f , glm::vec3(1.0f, 0.0f, 0.0f));
+
+    auto cubeNode = make_shared<MeshNode>();
+    cubeNode->mesh      = DemoData::meshes[3];
+    cubeNode->material  = DemoData::materials[0];
+    cubeNode->position  = glm::vec3(-2, 1, 0);
+    cubeNode->scale     = glm::vec3(1);
+    cubeNode->rotation  = glm::angleAxis(3.141529f / 2.0f , glm::vec3(1.0f, 0.0f, 0.0f));
 
     // auto lightMeshNode = shared_ptr<MeshNode>(new MeshNode());
     // lightMeshNode->mesh      = DemoData::meshes[0];
@@ -75,6 +86,7 @@ int main() {
 
     scene->tree->add(planeNode);
     scene->tree->add(meshNode);
+    scene->tree->add(cubeNode);
     // scene->tree->add(lightMeshNode);
 
     scene->tree->add(camNode);
@@ -90,6 +102,8 @@ int main() {
     while (!window.shouldQuit() && timer.secondsSinceStart() < DEMO_LENGTH_IN_SECONDS) {
 
         double elapsedSeconds = timer.secondsSinceStart();
+
+		meshNode->position  = glm::vec3(0, sin(2*M_PI*0.25* elapsedSeconds), 0);
 
         demoPartClear.process(demoPartClear.normalizeTime(elapsedSeconds));
         demoPartScene.process(demoPartScene.normalizeTime(elapsedSeconds));

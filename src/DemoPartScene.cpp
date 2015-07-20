@@ -20,7 +20,7 @@ const char* vs = R"(
 
 const char* ps = R"(
     void main (void) {
-        gl_FragColor = vec4(1, 0, 0, 1);
+        gl_FragColor = vec4(1);
     }
 )";
 
@@ -66,16 +66,54 @@ const char* ps2 = R"(
         vec3 normal = normalize(vEyeSpaceNormal);
         float diffuse = max(0.0, dot(normal, L));
 
-        float shadow = shadow2DProj(shadowMap, vShadowCoords).r;
-        diffuse = mix(diffuse, diffuse*shadow, 0.5);
+        float crtDepth = 1.0 - (vShadowCoords.z / vShadowCoords.w);
 
+        float cosTheta = max(0.0, dot(normal, L));
+        float bias = 0.005*tan(acos(cosTheta)); // cosTheta is dot( n,l ), clamped between 0 and 1
+        bias = clamp(bias, 0, 0.01);
+
+        float shadow;
+        float shadowWeight1, shadowWeight2, shadowWeight3, shadowWeight4;
+
+        shadow = shadow2DProj(shadowMap, vShadowCoords).r;
+        if ((shadow + bias) < crtDepth) {
+            shadowWeight1 = 0.0;
+        } else {
+            shadowWeight1 = 1.0;
+        }
+
+        shadow = shadow2DProj(shadowMap, vShadowCoords).r;
+        if ((shadow + bias) < crtDepth) {
+            shadowWeight2 = 0.0;
+        } else {
+            shadowWeight2 = 1.0;
+        }
+
+        shadow = shadow2DProj(shadowMap, vShadowCoords).r;
+        if ((shadow + bias) < crtDepth) {
+            shadowWeight3 = 0.0;
+        } else {
+            shadowWeight3 = 1.0;
+        }
+
+
+        shadow = shadow2DProj(shadowMap, vShadowCoords).r;
+        if ((shadow + bias) < crtDepth) {
+            shadowWeight4 = 0.0;
+        } else {
+            shadowWeight4 = 1.0;
+        }
+
+        shadow = (shadowWeight1 + shadowWeight2 + shadowWeight3 + shadowWeight4) / 4.0; 
+
+        diffuse = mix(diffuse, diffuse*shadow, 0.5);
         gl_FragColor = vec4(diffuseColor * diffuse, 1);
     }
 )";
 
 
-const int SHADOWMAP_WIDTH  = 512;
-const int SHADOWMAP_HEIGHT = 512;
+const int SHADOWMAP_WIDTH  = 4096;
+const int SHADOWMAP_HEIGHT = 4096;
 
 DemoPartScene::DemoPartScene() {
 
@@ -114,7 +152,7 @@ DemoPartScene::DemoPartScene() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 
     // set up FBO to get the depth component
     glGenFramebuffers(1, &fboID);
@@ -144,7 +182,7 @@ void DemoPartScene::process(float normalizedTime) {
         // set the light MV, P and bias matrices
 
         glm::mat4 worldToLightMatrix = glm::lookAt(light.position, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-        glm::mat4 lightProjectionMatrix = glm::perspective(50.0f, 1.0f, 0.1f, 100.0f);
+        glm::mat4 lightProjectionMatrix = glm::perspective(80.0f, 1.0f, 0.1f, 100.0f);
         glm::mat4 shadowMapBiasMatrix = glm::scale(glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5)), glm::vec3(0.5, 0.5, 0.5));
         glm::mat4 lightProjectionAndBiasMatrix = shadowMapBiasMatrix * lightProjectionMatrix;
         glm::mat4 finalShadowMapMatrix = lightProjectionAndBiasMatrix * worldToLightMatrix;
@@ -166,7 +204,7 @@ void DemoPartScene::process(float normalizedTime) {
         for (auto& node : scene->tree->nodes) {
             if (node->type == SceneNodeType::Mesh) {
                 MeshNode& meshNode = node->asMeshNode();
-                if (!meshNode.material->transparent) {
+                if (!meshNode.material->transparent && meshNode.material->castsShadows) {
 
                     shaderConstants.add(ShaderConstantType::ModelToWorldMatrix, &meshNode.modelToWorldSpaceMatrix[0][0]);
                     shaderConstants.set(*firstPassShadowMaterial->shader);

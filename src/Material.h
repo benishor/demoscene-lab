@@ -46,6 +46,7 @@ struct Material {
     bool cullFaces      = false;
     bool cullFrontFaces = false;
     bool transparent    = false;
+    bool castsShadows   = true;
 
     BlendingConstant blendSrcFactor = BlendingConstant::SRC_ALPHA;
     BlendingConstant blendDstFactor = BlendingConstant::ONE_MINUS_SRC_ALPHA;
