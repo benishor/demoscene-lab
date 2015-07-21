@@ -65,7 +65,6 @@ const char* ps2 = R"(
 
         vec3 normal = normalize(vEyeSpaceNormal);
         float diffuse = max(0.0, dot(normal, L));
-
         float crtDepth = 1.0 - (vShadowCoords.z / vShadowCoords.w);
 
         float cosTheta = max(0.0, dot(normal, L));
@@ -74,6 +73,20 @@ const char* ps2 = R"(
 
         float shadow;
         float shadowWeight1, shadowWeight2, shadowWeight3, shadowWeight4;
+
+        vec2 texmapscale = vec2(1024, 1024);
+
+        // float3 offset_lookup(sampler2D map, float4 loc, float2 offset) {
+        //     return tex2Dproj(map, float4(loc.xy + offset * texmapscale * loc.w, loc.z, loc.w));
+        // }
+ 
+        // float sum = 0;
+        // float x, y;
+
+        // for (y = -1.5; y <= 1.5; y += 1.0)
+        // for (x = -1.5; x <= 1.5; x += 1.0)
+        // sum += offset_lookup(shadowmap, shadowCoord, float2(x, y));
+
 
         shadow = shadow2DProj(shadowMap, vShadowCoords).r;
         if ((shadow + bias) < crtDepth) {
@@ -112,8 +125,8 @@ const char* ps2 = R"(
 )";
 
 
-const int SHADOWMAP_WIDTH  = 4096;
-const int SHADOWMAP_HEIGHT = 4096;
+const int SHADOWMAP_WIDTH  = 1024;
+const int SHADOWMAP_HEIGHT = 1024;
 
 DemoPartScene::DemoPartScene() {
 
