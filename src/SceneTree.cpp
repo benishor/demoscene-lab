@@ -2,7 +2,7 @@
 
 namespace Acidrain {
 
-std::shared_ptr<SceneNode> SceneTree::nodeById(int id) {
+std::shared_ptr<SceneNode> SceneTree::nodeById(int id) const {
     for (auto& node : nodes)
         if (node->id == id)
             return node;
@@ -10,7 +10,7 @@ std::shared_ptr<SceneNode> SceneTree::nodeById(int id) {
     return std::shared_ptr<SceneNode>(nullptr);
 }
 
-std::shared_ptr<SceneNode> SceneTree::nodeByNameAndType(std::string name, SceneNodeType type) {
+std::shared_ptr<SceneNode> SceneTree::nodeByNameAndType(std::string name, SceneNodeType type) const {
     for (auto& node : nodes)
         if (node->name == name && node->type == type)
             return node;
@@ -37,7 +37,7 @@ void SceneTree::add(std::shared_ptr<SceneNode> node, std::shared_ptr<SceneNode> 
 }
 
 void SceneTree::transform() {
-    for (auto node : nodes)
+    for (auto& node : nodes)
         node->calculateLocalTransform();
 
     for (auto& node : rootNodes)

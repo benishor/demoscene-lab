@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SceneNode.h>
+#include <Texture.h>
 
 namespace Acidrain {
 
@@ -12,7 +13,9 @@ enum class LightType {
 };
 
 struct LightNode : SceneNode {
-    LightNode();
+    LightNode(LightType lType);
+
+    void calculateLocalTransform() override;
 
     LightType   lightType;
 
@@ -25,6 +28,15 @@ struct LightNode : SceneNode {
     glm::vec3   spotTarget;
     float       spotCutoff;
     float       spotExponent;
+
+    bool        active = true;
+
+    int                         shadowMapWidth = 1024;
+    glm::mat4                   lightProjectionMatrix[6];
+    glm::mat4                   worldToLightMatrix[6];
+    glm::mat4                   shadowMapBiasMatrix;
+    glm::mat4                   finalShadowMapMatrix[6];
+    std::shared_ptr<Texture>    shadowMap[6];
 };
 
 	

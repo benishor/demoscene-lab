@@ -14,6 +14,7 @@ public:
 
     int 	getWidth() const;
     int 	getHeight() const;
+    GLuint  getId() const { return textureId; }
 
     void 	use();
     void 	unuse();

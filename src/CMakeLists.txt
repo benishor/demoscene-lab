@@ -25,6 +25,7 @@ set(HEADERS
    ${CMAKE_CURRENT_SOURCE_DIR}/Scene.h
    ${CMAKE_CURRENT_SOURCE_DIR}/ShaderConstants.h
    ${CMAKE_CURRENT_SOURCE_DIR}/SceneNode.h
+   ${CMAKE_CURRENT_SOURCE_DIR}/SceneRenderer.h
    ${CMAKE_CURRENT_SOURCE_DIR}/Shader.h
    ${CMAKE_CURRENT_SOURCE_DIR}/Texture.h
    ${CMAKE_CURRENT_SOURCE_DIR}/TextureGenerator.h
@@ -54,6 +55,7 @@ set(SOURCE
    ${CMAKE_CURRENT_SOURCE_DIR}/MeshNode.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/Scene.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/SceneNode.cpp
+   ${CMAKE_CURRENT_SOURCE_DIR}/SceneRenderer.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/SceneTree.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/ShaderConstants.cpp
    ${CMAKE_CURRENT_SOURCE_DIR}/Shader.cpp

@@ -8,8 +8,8 @@ namespace Acidrain {
 class SceneTree {
 public:
 
-    std::shared_ptr<SceneNode> nodeById(int id);
-    std::shared_ptr<SceneNode> nodeByNameAndType(std::string name, SceneNodeType type);
+    std::shared_ptr<SceneNode> nodeById(int id) const;
+    std::shared_ptr<SceneNode> nodeByNameAndType(std::string name, SceneNodeType type) const;
 
     void add(std::shared_ptr<SceneNode> node);
     void add(std::shared_ptr<SceneNode> node, std::shared_ptr<SceneNode> parent);
