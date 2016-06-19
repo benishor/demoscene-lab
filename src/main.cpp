@@ -50,7 +50,7 @@ int main() {
     DemoPartClear demoPartClear;
     demoPartClear.startTime = 0;
     demoPartClear.endTime = DEMO_LENGTH_IN_SECONDS;
-    demoPartClear.color = glm::vec4(0.1, 0, 0.2, 1);
+    demoPartClear.color = glm::vec4(0.0, 0.4, 0.0, 1);
 
     DemoPartScene demoPartScene;
     demoPartScene.startTime = 0;

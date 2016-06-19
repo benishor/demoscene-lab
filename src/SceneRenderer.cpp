@@ -10,148 +10,52 @@
 namespace Acidrain {
 
 static const char* vs = R"(
+    #version 150 core
+
+    in vec3 position;
+    in vec3 normal;
+    in vec2 texCoords;
+
     uniform mat4 mmtx;
     uniform mat4 wlmtx;
     uniform mat4 lpmtx;
 
     void main() {    
-        gl_Position = lpmtx * wlmtx * mmtx * gl_Vertex;
+        gl_Position = lpmtx * wlmtx * mmtx * vec4(position, 1);
     }
 )";
 
 static const char* ps = R"(
+    #version 150 core
+
+    out vec4 colorOut;
+
     void main (void) {
-        gl_FragColor = vec4(1);
+        colorOut = vec4(1);
     }
 )";
 
 static const char* vs2 = R"(
+    #version 150 core
+
     uniform mat4 mmtx;
     uniform mat4 vmtx;
-    uniform mat3 nmtx;
     uniform mat4 pmtx;
 
-    uniform mat4 wlmtx[4];
-    uniform mat4 lpmtx[4];
-    uniform mat4 sbmtx;
-
-    varying vec3 vEyeSpaceNormal;
-    varying vec3 vEyeSpacePosition;
-    varying vec4 vShadowCoords[4];
-    uniform int  numLights;
+    in vec3 position;
+    in vec3 normal;
 
     void main() {    
-        gl_Position = pmtx * vmtx * mmtx * gl_Vertex;
-
-        vEyeSpacePosition = (vmtx * mmtx * gl_Vertex).xyz;
-        vEyeSpaceNormal   = normalize(nmtx * gl_Normal.xyz);
-
-        for (int i = 0; i < numLights; i++) {
-	        vShadowCoords[i] = sbmtx * lpmtx[i] * wlmtx[i] * mmtx * gl_Vertex;
-        }
+        gl_Position = pmtx * vmtx * mmtx * vec4(position, 1);
     }
 )";
 
 static const char* ps2 = R"(
-    uniform sampler2DShadow shadowMap1;
-    uniform sampler2DShadow shadowMap2;
-    uniform sampler2DShadow shadowMap3;
-    uniform sampler2DShadow shadowMap4;
-
-    uniform vec3 lPosEye[4];
-    uniform vec4 matAmbientCol;
-    uniform vec4 matDiffuseCol;
-    uniform vec4 matSpecularCol;
-    uniform int  numLights;
-
-    struct Light {
-    	int type;
-    	vec3 position;
-    	vec3 target;
-    	float spotCutoff;
-    	float spotExponent;
-    	vec3 attenuation;
-    	vec4 ambient;
-    	vec4 diffuse;
-    	vec4 specular;
-    };
-
-    uniform Light light[4];
-
-    const vec2 texmapscale = vec2(1.0f/1024.0f, 1.0f/1024.0f);
-
-    varying vec3 vEyeSpaceNormal;
-    varying vec3 vEyeSpacePosition;
-    varying vec4 vShadowCoords[4];
-
-    float lookup(int lightIndex, vec2 offset) {
-        if (lightIndex == 0)
-            return shadow2DProj(
-                shadowMap1,
-                vShadowCoords[lightIndex] + vec4(
-                    offset.x * texmapscale.x * vShadowCoords[lightIndex].w,
-                    offset.y * texmapscale.y * vShadowCoords[lightIndex].w,
-                    -0.001,
-                    0.0
-                )
-            ).r;
-        else if (lightIndex == 1)
-            return shadow2DProj(
-                shadowMap2,
-                vShadowCoords[lightIndex] + vec4(
-                    offset.x * texmapscale.x * vShadowCoords[lightIndex].w,
-                    offset.y * texmapscale.y * vShadowCoords[lightIndex].w,
-                    -0.001,
-                    0.0
-                )
-            ).r;
-        else if (lightIndex == 2)
-            return shadow2DProj(
-                shadowMap3,
-                vShadowCoords[lightIndex] + vec4(
-                    offset.x * texmapscale.x * vShadowCoords[lightIndex].w,
-                    offset.y * texmapscale.y * vShadowCoords[lightIndex].w,
-                    -0.001,
-                    0.0
-                )
-            ).r;
-        else
-            return shadow2DProj(
-                shadowMap3,
-                vShadowCoords[lightIndex] + vec4(
-                    offset.x * texmapscale.x * vShadowCoords[lightIndex].w,
-                    offset.y * texmapscale.y * vShadowCoords[lightIndex].w,
-                    -0.001,
-                    0.0
-                )
-            ).r;
-    }
+    #version 150 core
+    out vec4 outColor;
 
     void main() {
-    	vec4 finalColor = matAmbientCol;
-        vec3 normal = normalize(vEyeSpaceNormal);
-
-    	for (int i = 0; i < numLights; i++) {
-	        vec3 L = (light[i].position - vEyeSpacePosition);
-	        float d = length(L);
-	        L = normalize(L);
-
-	        float diffuse = max(0.0, dot(normal, L));
-
-            float shadow = 1.0f;
-//            if (vShadowCoords[i].w > 1.0) {
-                float x,y;
-                shadow = 0.0f;
-                for (y = -1.5 ; y <=1.5 ; y+=1.0)
-                    for (x = -1.5 ; x <=1.5 ; x+=1.0)
-                        shadow += lookup(i, vec2(x,y));
-
-                shadow /= 32.0;
-//            }
-            diffuse = mix(diffuse, diffuse * shadow, 0.5);
-	        finalColor += matDiffuseCol * diffuse;
-    	}
-        gl_FragColor = finalColor;
+        outColor = vec4(1, 1, 1, 1);
     }
 )";
 
@@ -166,7 +70,7 @@ SceneRenderer::SceneRenderer() {
     firstPassShadowMaterial->zBufferTest  = true;
     firstPassShadowMaterial->transparent  = false;
     firstPassShadowMaterial->cullFaces    = true;
-    firstPassShadowMaterial->cullFrontFaces = false;    
+    firstPassShadowMaterial->cullFrontFaces = false;
 
     secondPassShadowShader = std::make_shared<Shader>(vs2, ps2);
 
@@ -177,7 +81,7 @@ SceneRenderer::SceneRenderer() {
     secondPassShadowMaterial->zBufferTest  = true;
     secondPassShadowMaterial->transparent  = false;
     secondPassShadowMaterial->cullFaces    = false;
-    secondPassShadowMaterial->flatShaded   = false;    
+    secondPassShadowMaterial->flatShaded   = false;
 }
 
 void SceneRenderer::attachDepthTexture(Texture& texture) {
@@ -188,12 +92,6 @@ void SceneRenderer::attachDepthTexture(Texture& texture) {
 
 
 void SceneRenderer::render(const SceneTree& scene, const std::string& cameraName) {
-	for (auto& node : scene.lights) {
-		LightNode& light = node->asLightNode();
-	    glActiveTexture(GL_TEXTURE0);
-		renderShadowMap(scene, light);
-	}
-
     std::shared_ptr<SceneNode> camNode = scene.nodeByNameAndType(cameraName, SceneNodeType::Camera);
     CameraNode& camera = camNode->asCameraNode();
 
@@ -203,57 +101,13 @@ void SceneRenderer::render(const SceneTree& scene, const std::string& cameraName
     // TODO: inject this from outside
     // shaderConstants.set(Uniforms::DemoPartNormalizedTime, normalizedTime);
 
-    setMaterial(secondPassShadowMaterial);
-
-    int lightIndex = 0;
-	for (auto& node : scene.lights) {
-		LightNode& light = node->asLightNode();
-
-		shaderConstants.set(Uniforms::WorldToLightMatrix, light.worldToLightMatrix[0], lightIndex);
-		shaderConstants.set(Uniforms::LightProjectionMatrix, light.lightProjectionMatrix[0], lightIndex);
-		shaderConstants.set(Uniforms::ShadowMatrix, light.finalShadowMapMatrix[0], lightIndex);
-		shaderConstants.set(Uniforms::ShadowBiasMatrix, light.shadowMapBiasMatrix);
-
-	    glm::vec3 lightPositionInEyeSpace = light.position - camera.position;
-	    shaderConstants.set(Uniforms::LightPosition, lightPositionInEyeSpace, lightIndex);
-
-	    glm::vec3 lightTargetInEyeSpace = light.spotTarget - camera.position;
-	    shaderConstants.set(Uniforms::LightTarget, lightTargetInEyeSpace, lightIndex);
-
-	    shaderConstants.set(Uniforms::LightAmbient, light.ambient, lightIndex);
-	    shaderConstants.set(Uniforms::LightDiffuse, light.diffuse, lightIndex);
-	    shaderConstants.set(Uniforms::LightSpecular, light.specular, lightIndex);
-
-	    shaderConstants.set(Uniforms::LightSpotCutoff, light.spotCutoff, lightIndex);
-	    shaderConstants.set(Uniforms::LightSpotExponent, light.spotExponent, lightIndex);
-	    shaderConstants.set(Uniforms::LightAttenuation, light.attenuation, lightIndex);
-
-        glActiveTexture(GL_TEXTURE0 + 4 + lightIndex);
-        glBindTexture(GL_TEXTURE_2D, light.shadowMap[0]->getId());
-
-        if (lightIndex == 0) {
-            shaderConstants.set(Uniforms::ShadowMap1, lightIndex + 4);
-        } else if (lightIndex == 1) {
-            shaderConstants.set(Uniforms::ShadowMap2, lightIndex + 4);
-        } else if (lightIndex == 2) {
-            shaderConstants.set(Uniforms::ShadowMap3, lightIndex + 4);
-        } else if (lightIndex == 3) {
-            shaderConstants.set(Uniforms::ShadowMap4, lightIndex + 4);
-        }
-
-	    lightIndex++;
-	}
-
+    setMaterial(firstPassShadowMaterial);
     // draw opaque nodes
     for (auto& node : scene.nodes) {
         if (node->type == SceneNodeType::Mesh) {
             MeshNode& meshNode = node->asMeshNode();
 
-            glm::mat3 normalMatrix = glm::inverseTranspose(
-            	glm::mat3(camera.viewMatrix * meshNode.modelToWorldSpaceMatrix));
-
             shaderConstants.set(Uniforms::ModelToWorldMatrix, meshNode.modelToWorldSpaceMatrix);
-            shaderConstants.set(Uniforms::NormalMatrix, normalMatrix);
             shaderConstants.set(Uniforms::MaterialAmbientColor, meshNode.material->ambient);
             shaderConstants.set(Uniforms::MaterialDiffuseColor, meshNode.material->diffuse);
             shaderConstants.set(Uniforms::MaterialSpecularColor, meshNode.material->specular);
@@ -265,8 +119,7 @@ void SceneRenderer::render(const SceneTree& scene, const std::string& cameraName
         }
     }
 
-    unsetMaterial(secondPassShadowMaterial);
-
+    unsetMaterial(firstPassShadowMaterial);
 }
 
 void SceneRenderer::renderShadowMap(const SceneTree& scene, LightNode& light) {

@@ -1,4 +1,5 @@
 #include <LightNode.h>
+#define GL_COMPARE_REF_TO_TEXTURE 0x884E
 
 namespace Acidrain {
 
