@@ -124,6 +124,17 @@ int main() {
     scene->tree->add(lightNode);
     scene->tree->add(lightNode2);
 
+
+    auto camPosTrack = shared_ptr<Vec3Track>(new Vec3Track);
+    camPosTrack->controlledObjects.push_back(&camNode->position[0]);
+    camPosTrack->addKey(Key::vec3Key(0, glm::vec3(0, 1, 2)));
+    camPosTrack->addKey(Key::vec3Key(0.5, glm::vec3(1, 1, 2)));
+    camPosTrack->addKey(Key::vec3Key(1, glm::vec3(2, 1, 1)));
+
+    auto timeline = shared_ptr<Timeline>(new Timeline);
+    scene->timeline = timeline;
+    scene->timeline->tracks.push_back(camPosTrack);
+
     // --------------------------------------------------------------------------------------
     // Run demo
     // --------------------------------------------------------------------------------------
