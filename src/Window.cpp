@@ -46,7 +46,7 @@ namespace Acidrain {
 
     static void openGlDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
         if (severity != GL_DEBUG_SEVERITY_NOTIFICATION && severity != GL_DEBUG_SEVERITY_LOW) {
-            std::cout << "OGL >> " << OGL_DEBUG_SOURCE_MAP[source] << " [" << OGL_DEBUG_TYPE_MAP[type] << ", " << OGL_DEBUG_SEVERITY_MAP[severity] << "] " << std::string(message, length);
+            std::cout << "OGL >> " << OGL_DEBUG_SOURCE_MAP[source] << " [" << OGL_DEBUG_TYPE_MAP[type] << ", " << OGL_DEBUG_SEVERITY_MAP[severity] << "] " << std::string(message, length) << std::endl;
         }
     }
 

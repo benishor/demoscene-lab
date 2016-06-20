@@ -28,13 +28,19 @@ struct Edge {
 };
 
 struct Mesh {
+
+    Mesh();
+    ~Mesh();
+
     std::vector<Vertex> vertices;
     std::vector<Facet>  facets;
     std::vector<Edge>   edges;
 
     void render(bool flatShaded);
 
+    bool initialized = false;
     GLuint vboId = 0;
+    GLuint vaoId = 0;
     float* vboData = nullptr;
     int vboSizeInElements = 0;
 };

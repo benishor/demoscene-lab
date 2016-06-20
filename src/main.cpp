@@ -124,17 +124,6 @@ int main() {
     scene->tree->add(lightNode);
     scene->tree->add(lightNode2);
 
-
-    auto camPosTrack = shared_ptr<Vec3Track>(new Vec3Track);
-    camPosTrack->controlledObjects.push_back(&camNode->position[0]);
-    camPosTrack->addKey(Key::vec3Key(0, glm::vec3(0, 1, 2)));
-    camPosTrack->addKey(Key::vec3Key(0.5, glm::vec3(1, 1, 2)));
-    camPosTrack->addKey(Key::vec3Key(1, glm::vec3(2, 1, 1)));
-
-    auto timeline = shared_ptr<Timeline>(new Timeline);
-    scene->timeline = timeline;
-    scene->timeline->tracks.push_back(camPosTrack);
-
     // --------------------------------------------------------------------------------------
     // Run demo
     // --------------------------------------------------------------------------------------
@@ -146,10 +135,10 @@ int main() {
 
         double elapsedSeconds = timer.secondsSinceStart();
 
-		// meshNode->position  = glm::vec3(0, sin(2*M_PI*0.25* elapsedSeconds), 0);
+        // meshNode->position  = glm::vec3(0, sin(2*M_PI*0.25* elapsedSeconds), 0);
         meshNode->position = glm::vec3(0, 0.001, 0);
-  //       camNode->target = glm::vec3(0, 0.0001, 0);
-		// camNode->position = glm::vec3(0, 5, -10);
+        //       camNode->target = glm::vec3(0, 0.0001, 0);
+        // camNode->position = glm::vec3(0, 5, -10);
         lightNode2->position = glm::vec3(5 * sin(2*M_PI*0.25* elapsedSeconds), 2, 5 * cos(2*M_PI*0.25* elapsedSeconds));
 
         demoPartClear.process(demoPartClear.normalizeTime(elapsedSeconds));

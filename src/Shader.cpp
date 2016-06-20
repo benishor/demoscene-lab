@@ -40,8 +40,13 @@ Shader::Shader(const char* vertexShaderContent, const char* pixelShaderContent) 
     programId = glCreateProgram();
     glAttachShader(programId, shaderIds[0]);
     glAttachShader(programId, shaderIds[1]);
-    glLinkProgram(programId);
 
+    // TODO Adrian: these should come from an external enumeration
+    glBindAttribLocation(programId, 0, "position");
+    glBindAttribLocation(programId, 1, "normal");
+    glBindAttribLocation(programId, 2, "texCoords");
+
+    glLinkProgram(programId);
     glUseProgram(programId);
 }
 
