@@ -1,5 +1,9 @@
 #include <Mesh.h>
 
+#if defined (__APPLE__)
+    #include <OpenGL/gl3.h>
+#endif
+
 namespace Acidrain {
 
     constexpr char* BUFFER_OFFSET(int i) {

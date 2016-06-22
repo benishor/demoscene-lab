@@ -1,6 +1,14 @@
 #include <Fbo.h>
 #include <DemoData.h>
 
+
+#if defined (__APPLE__)
+    #include <OpenGL/gl3.h>
+#endif
+
+// redefinition but caused by OSX
+// #define GL_TEXTURE_2D_MULTISAMPLE 0x9100
+
 namespace Acidrain {
 
 Fbo::Fbo(int w, int h) : width(w), height(h) {

@@ -1,5 +1,5 @@
 #ifdef __APPLE__
-#define NO_SDL_GLEXT
+    #define NO_SDL_GLEXT
 #endif
 
 #include <Window.h>
@@ -17,6 +17,7 @@
 
 namespace Acidrain {
 
+#ifndef __APPLE__
     static std::map<GLenum, std::string> OGL_DEBUG_SOURCE_MAP = {
             {GL_DEBUG_SOURCE_API,             "API"},
             {GL_DEBUG_SOURCE_WINDOW_SYSTEM,   "WINDOW_SYSTEM"},
@@ -50,6 +51,7 @@ namespace Acidrain {
             std::cout << "OGL >> " << OGL_DEBUG_SOURCE_MAP[source] << " [" << OGL_DEBUG_TYPE_MAP[type] << ", " << OGL_DEBUG_SEVERITY_MAP[severity] << "] " << std::string(message, length) << std::endl;
         }
     }
+#endif
 
     Window::Window(int w, int h, WindowType t)
             : width(w), height(h), type(t) {
@@ -72,7 +74,9 @@ namespace Acidrain {
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
 
         // Set up context debug flag
+#ifndef __APPLE__
         int result = SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+#endif
 
         Uint32 windowFlags = SDL_WINDOW_OPENGL;
         if (type == WindowType::Fullscreen)
@@ -117,6 +121,7 @@ namespace Acidrain {
         }
 #endif
 
+#ifndef __APPLE__
         if (glDebugMessageCallback) {
             glDebugMessageCallback(openGlDebugCallback, 0);
             glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, true);
@@ -126,7 +131,8 @@ namespace Acidrain {
         } else {
             std::cout << "glDebugMessageCallback not available";
         }
-
+#endif
+        
         SDL_GL_SetSwapInterval(1);
     }
 
