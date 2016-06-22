@@ -10,19 +10,16 @@ Fbo::Fbo(int w, int h) : width(w), height(h) {
 
     glBindFramebuffer(GL_FRAMEBUFFER, frameBufferId);
 
-    glBindTexture(GL_TEXTURE_2D, colorBufferId);
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 GL_RGBA,
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, colorBufferId);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,
+                            4, // number of samples for multisampling
+                 GL_RGBA8,
                  width, height,
-                 0,
-                 GL_RGBA,
-                 GL_UNSIGNED_BYTE,
-                 NULL);
+                false);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBufferId, 0);
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, colorBufferId, 0);
 
     glBindRenderbuffer(GL_RENDERBUFFER, depthBufferId);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);

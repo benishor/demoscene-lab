@@ -21,12 +21,12 @@ void setMaterial(std::shared_ptr<Material>& material) {
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     material->shader->use();
 
-    glEnable(GL_COLOR_MATERIAL);
+//    glEnable(GL_COLOR_MATERIAL);
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, &material->ambient[0]);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, &material->diffuse[0]);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, &material->specular[0]);
-    glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, material->shininess);
+//    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, &material->ambient[0]);
+//    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, &material->diffuse[0]);
+//    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, &material->specular[0]);
+//    glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, material->shininess);
 
     // int textureUnit = 0;
     // for (auto& kv : material->textures) {

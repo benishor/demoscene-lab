@@ -13,6 +13,7 @@
 #include <string>
 #include <map>
 #include <iostream>
+#include "DemoData.h"
 
 namespace Acidrain {
 
@@ -53,6 +54,11 @@ namespace Acidrain {
     Window::Window(int w, int h, WindowType t)
             : width(w), height(h), type(t) {
 
+        DemoData::WIDTH = w;
+        DemoData::HEIGHT = h;
+
+        SDL_Init(SDL_INIT_VIDEO);
+
         SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
@@ -61,6 +67,9 @@ namespace Acidrain {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 16);
 
         // Set up context debug flag
         int result = SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);

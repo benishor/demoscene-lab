@@ -101,7 +101,7 @@ int main() {
     lightNode->spotCutoff   = 50.0f;
     lightNode->spotExponent = 16.0f;
     lightNode->ambient = glm::vec4(0.1, 0.1, 0.1, 1.0);
-    lightNode->diffuse = glm::vec4(0.5, 0.0, 0.0, 1.0);
+    lightNode->diffuse = glm::vec4(0.5, 0.5, 0.5, 1.0);
     lightNode->specular = glm::vec4(0.0, 0.8, 0.1, 1.0);
 
     auto lightNode2 = make_shared<LightNode>(LightType::Spot);
