@@ -9,26 +9,28 @@ const float DEMO_LENGTH_IN_SECONDS = 10;
 
 int main() {
 
-    Window window(1920, 1080, WindowType::Fullscreen);
+    Window window(1920, 1200, WindowType::Fullscreen);
 
     // --------------------------------------------------------------------------------------
     // Load resources
     // --------------------------------------------------------------------------------------
 
-    DemoData::meshes.push_back(MeshGenerator::sphere(30, 30));
-    DemoData::meshes.push_back(MeshGenerator::sphere(30, 30));
+    DemoData::meshes.push_back(MeshGenerator::sphere(50, 50));
+    DemoData::meshes.push_back(MeshGenerator::sphere(50, 50));
     DemoData::meshes.push_back(MeshGenerator::grid(30, 30));
     DemoData::meshes.push_back(MeshGenerator::cube());
 
     auto material = shared_ptr<Material>(new Material());
     material->ambient = glm::vec4(0.1, 0.1, 0.1, 1);
-    material->diffuse = glm::vec4(1, 0.2, 0.7, 1);
+//    material->diffuse = glm::vec4(1, 0.2, 0.7, 1);
+    material->diffuse = glm::vec4(1, 1, 1, 1);
     material->specular = glm::vec4(1, 1, 1, 1);
     DemoData::materials.push_back(material);
 
     material = make_shared<Material>();
     material->ambient = glm::vec4(0.1, 0.1, 0.1, 1);
     material->diffuse = glm::vec4(0.2, 1.0, 0.7, 1);
+//    material->diffuse = glm::vec4(1, 1, 1, 1);
     material->specular = glm::vec4(1, 1, 1, 1);
     material->castsShadows = false;
     DemoData::materials.push_back(material);
@@ -50,7 +52,7 @@ int main() {
     DemoPartClear demoPartClear;
     demoPartClear.startTime = 0;
     demoPartClear.endTime = DEMO_LENGTH_IN_SECONDS;
-    demoPartClear.color = glm::vec4(0.1, 0, 0.2, 1);
+    demoPartClear.color = glm::vec4(0.1, 0.1, 0.1, 1);
 
     DemoPartScene demoPartScene;
     demoPartScene.startTime = 0;
@@ -101,7 +103,7 @@ int main() {
     lightNode->spotCutoff   = 50.0f;
     lightNode->spotExponent = 16.0f;
     lightNode->ambient = glm::vec4(0.1, 0.1, 0.1, 1.0);
-    lightNode->diffuse = glm::vec4(0.5, 0.5, 0.5, 1.0);
+    lightNode->diffuse = glm::vec4(0.5, 1.0, 1.0, 1.0);
     lightNode->specular = glm::vec4(0.0, 0.8, 0.1, 1.0);
 
     auto lightNode2 = make_shared<LightNode>(LightType::Spot);
@@ -111,7 +113,7 @@ int main() {
     lightNode2->spotCutoff   = 50.0f;
     lightNode2->spotExponent = 16.0f;
     lightNode2->ambient = glm::vec4(0.1, 0.1, 0.1, 1.0);
-    lightNode2->diffuse = glm::vec4(0.5, 0.0, 0.0, 1.0);
+    lightNode2->diffuse = glm::vec4(1.0, 0.5, 1.0, 1.0);
     lightNode2->specular = glm::vec4(0.0, 0.8, 0.1, 1.0);
 
     scene->tree->add(planeNode);
@@ -135,11 +137,12 @@ int main() {
 
         double elapsedSeconds = timer.secondsSinceStart();
 
-        // meshNode->position  = glm::vec3(0, sin(2*M_PI*0.25* elapsedSeconds), 0);
-        meshNode->position = glm::vec3(0, 0.001, 0);
+         meshNode->position  = glm::vec3(0, sin(2*M_PI*0.13* elapsedSeconds) * 2.0 + 0.5, 0);
+//        meshNode->position = glm::vec3(0, 0.001, 0);
         //       camNode->target = glm::vec3(0, 0.0001, 0);
         // camNode->position = glm::vec3(0, 5, -10);
         lightNode2->position = glm::vec3(5 * sin(2*M_PI*0.25* elapsedSeconds), 2, 5 * cos(2*M_PI*0.25* elapsedSeconds));
+        lightNode->position = glm::vec3(5 * cos(2*M_PI*0.75* elapsedSeconds), 2, 5 * sin(2*M_PI*0.75* elapsedSeconds));
 
         demoPartClear.process(demoPartClear.normalizeTime(elapsedSeconds));
         demoPartScene.process(demoPartScene.normalizeTime(elapsedSeconds));

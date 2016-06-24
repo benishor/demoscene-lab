@@ -109,7 +109,7 @@ namespace Acidrain {
                 vShadowCoords[lightIndex] + vec4(
                     offset.x * texmapscale.x * vShadowCoords[lightIndex].w,
                     offset.y * texmapscale.y * vShadowCoords[lightIndex].w,
-                    -0.001,
+                    -0.02,
                     0.0
                 )
             );
@@ -119,7 +119,7 @@ namespace Acidrain {
                 vShadowCoords[lightIndex] + vec4(
                     offset.x * texmapscale.x * vShadowCoords[lightIndex].w,
                     offset.y * texmapscale.y * vShadowCoords[lightIndex].w,
-                    -0.001,
+                    -0.02,
                     0.0
                 )
             );
@@ -129,7 +129,7 @@ namespace Acidrain {
                 vShadowCoords[lightIndex] + vec4(
                     offset.x * texmapscale.x * vShadowCoords[lightIndex].w,
                     offset.y * texmapscale.y * vShadowCoords[lightIndex].w,
-                    -0.001,
+                    -0.02,
                     0.0
                 )
             );
@@ -139,7 +139,7 @@ namespace Acidrain {
                 vShadowCoords[lightIndex] + vec4(
                     offset.x * texmapscale.x * vShadowCoords[lightIndex].w,
                     offset.y * texmapscale.y * vShadowCoords[lightIndex].w,
-                    -0.001,
+                    -0.02,
                     0.0
                 )
             );
@@ -166,8 +166,11 @@ namespace Acidrain {
 
                 shadow /= 32.0;
 //            }
-            diffuse = mix(diffuse, diffuse * shadow, 0.5);
-	        finalColor += matDiffuseCol * diffuse;
+            //diffuse = mix(diffuse, diffuse * shadow, 0.5);
+            //float ambient = mix(1.0, shadow, 0.5);
+
+	        //finalColor += matAmbientCol * ambient * light[i].ambient;
+            finalColor += matDiffuseCol * diffuse * light[i].diffuse * shadow;
     	}
         outColor = finalColor;
     }
