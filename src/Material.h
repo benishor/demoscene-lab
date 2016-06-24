@@ -9,55 +9,58 @@
 
 namespace Acidrain {
 
-enum class FillMode {
-    Wireframe,
-    Solid
-};
+    using namespace std;
+    using namespace glm;
 
-enum class BlendingConstant {
-    SRC_COLOR,
-    DST_COLOR,
-    ONE,
-    ZERO,
-    SRC_ALPHA,
-    DST_ALPHA,
-    ONE_MINUS_SRC_ALPHA,
-    ONE_MINUS_DST_ALPHA,
-};
+    enum class FillMode {
+        Wireframe,
+        Solid
+    };
 
-enum class TextureRole {
-    Diffuse,
-    Specular,
-    Normal,
-    Bump
-};
+    enum class BlendingConstant {
+        SRC_COLOR,
+        DST_COLOR,
+        ONE,
+        ZERO,
+        SRC_ALPHA,
+        DST_ALPHA,
+        ONE_MINUS_SRC_ALPHA,
+        ONE_MINUS_DST_ALPHA,
+    };
 
-typedef std::map<TextureRole, std::shared_ptr<Texture>> TextureMap;
+    enum class TextureRole {
+        Diffuse,
+        Specular,
+        Normal,
+        Bump
+    };
 
-struct Material {
-    glm::vec4   		ambient;
-    glm::vec4   		diffuse;
-    glm::vec4   		specular;
-    int         		shininess;
+    typedef map<TextureRole, shared_ptr<Texture>> TextureMap;
 
-    bool flatShaded     = true;
-    bool zBufferWrite   = true;
-    bool zBufferTest    = true;
-    bool cullFaces      = false;
-    bool cullFrontFaces = false;
-    bool transparent    = false;
-    bool castsShadows   = true;
+    struct Material {
+        vec4 ambient;
+        vec4 diffuse;
+        vec4 specular;
+        float shininess = 1.f;
 
-    BlendingConstant blendSrcFactor = BlendingConstant::SRC_ALPHA;
-    BlendingConstant blendDstFactor = BlendingConstant::ONE_MINUS_SRC_ALPHA;
+        bool flatShaded = true;
+        bool zBufferWrite = true;
+        bool zBufferTest = true;
+        bool cullFaces = false;
+        bool cullFrontFaces = false;
+        bool transparent = false;
+        bool castsShadows = true;
 
-    FillMode 				fillMode = FillMode::Solid;
-    std::shared_ptr<Shader> shader;
-    TextureMap				textures;
-};
+        BlendingConstant blendSrcFactor = BlendingConstant::SRC_ALPHA;
+        BlendingConstant blendDstFactor = BlendingConstant::ONE_MINUS_SRC_ALPHA;
 
-void setMaterial(std::shared_ptr<Material>& material);
-void unsetMaterial(std::shared_ptr<Material>& material);
+        FillMode fillMode = FillMode::Solid;
+        shared_ptr<Shader> shader;
+        TextureMap textures;
+    };
+
+    void setMaterial(shared_ptr<Material>& material);
+    void unsetMaterial(shared_ptr<Material>& material);
 
 } // namespace Acidrain
 

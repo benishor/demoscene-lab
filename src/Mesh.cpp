@@ -6,6 +6,8 @@
 
 namespace Acidrain {
 
+    using namespace glm;
+
     constexpr char* BUFFER_OFFSET(int i) {
         return (char*) NULL + i * sizeof(float);
     }
@@ -93,14 +95,14 @@ namespace Acidrain {
 
     void calculateNormals(Mesh& mesh) {
         for (auto& vertex : mesh.vertices)
-            vertex.normal = glm::vec3(0);
+            vertex.normal = vec3(0);
 
         for (auto& facet : mesh.facets) {
-            glm::vec3 a = mesh.vertices[facet.b].position - mesh.vertices[facet.a].position;
-            glm::vec3 b = mesh.vertices[facet.c].position - mesh.vertices[facet.a].position;
-            facet.normal = glm::cross(a, b);
-            if (glm::length(facet.normal) > 0.00001) {
-                facet.normal = glm::normalize(facet.normal);
+            vec3 a = mesh.vertices[facet.b].position - mesh.vertices[facet.a].position;
+            vec3 b = mesh.vertices[facet.c].position - mesh.vertices[facet.a].position;
+            facet.normal = cross(a, b);
+            if (length(facet.normal) > 0.00001) {
+                facet.normal = normalize(facet.normal);
             }
 
             mesh.vertices[facet.a].normal += facet.normal;
@@ -109,8 +111,7 @@ namespace Acidrain {
         }
 
         for (auto& vertex : mesh.vertices)
-            vertex.normal = glm::normalize(vertex.normal);
+            vertex.normal = normalize(vertex.normal);
     }
-
 
 } // namespace Acidrain

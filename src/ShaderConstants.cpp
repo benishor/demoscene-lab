@@ -17,6 +17,7 @@ UniformDescriptor Uniforms::MaterialAmbientColor("matAmbientCol");
 UniformDescriptor Uniforms::MaterialDiffuseColor("matDiffuseCol");
 UniformDescriptor Uniforms::MaterialSpecularColor("matSpecularCol");
 UniformDescriptor Uniforms::MaterialShininess("matShininess");
+UniformDescriptor Uniforms::DiffuseMap("diffuseMap");
 UniformDescriptor Uniforms::ShadowMap("shadowMap");
 UniformDescriptor Uniforms::ShadowMap1("shadowMap1");
 UniformDescriptor Uniforms::ShadowMap2("shadowMap2");

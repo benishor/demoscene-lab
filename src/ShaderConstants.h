@@ -65,6 +65,7 @@ public:
     static UniformDescriptor MaterialDiffuseColor;
     static UniformDescriptor MaterialSpecularColor;
     static UniformDescriptor MaterialShininess;
+    static UniformDescriptor DiffuseMap;
     static UniformDescriptor ShadowMap;
     static UniformDescriptor ShadowMap1;
     static UniformDescriptor ShadowMap2;

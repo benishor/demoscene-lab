@@ -6,45 +6,47 @@
 
 namespace Acidrain {
 
-struct Vertex {
-    glm::vec3 position;
-    glm::vec3 normal;
-};
+    using namespace std;
+    using namespace glm;
 
-struct Facet {
-    union {
-        struct {
-            int a, b, c;
-        };
-        int vertices[3];
+    struct Vertex {
+        vec3 position;
+        vec3 normal;
     };
-    glm::vec3   normal;
-    glm::vec2   textCoords[3];
-};
 
-struct Edge {
-    int from;
-    int to;
-};
+    struct Facet {
+        union {
+            struct {
+                int a, b, c;
+            };
+            int vertices[3];
+        };
+        vec3 normal;
+        vec2 textCoords[3];
+    };
 
-struct Mesh {
+    struct Edge {
+        int from;
+        int to;
+    };
 
-    Mesh();
-    ~Mesh();
+    struct Mesh {
+        Mesh();
+        ~Mesh();
 
-    std::vector<Vertex> vertices;
-    std::vector<Facet>  facets;
-    std::vector<Edge>   edges;
+        vector<Vertex> vertices;
+        vector<Facet> facets;
+        vector<Edge> edges;
 
-    void render(bool flatShaded);
+        void render(bool flatShaded);
 
-    bool initialized = false;
-    GLuint vboId = 0;
-    GLuint vaoId = 0;
-    float* vboData = nullptr;
-    int vboSizeInElements = 0;
-};
+        bool initialized = false;
+        GLuint vboId = 0;
+        GLuint vaoId = 0;
+        float* vboData = nullptr;
+        int vboSizeInElements = 0;
+    };
 
-void calculateNormals(Mesh& mesh);
+    void calculateNormals(Mesh& mesh);
 
 } // namespace Acidrain

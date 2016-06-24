@@ -50,16 +50,19 @@ namespace Acidrain {
     out vec3 vEyeSpaceNormal;
     out vec3 vEyeSpacePosition;
     out vec4 vShadowCoords[4];
+    out vec2 vTexCoords;
     uniform int numLights;
 
     in vec3 position;
     in vec3 normal;
+    in vec2 texCoords;
 
     void main() {    
         gl_Position = pmtx * vmtx * mmtx * vec4(position, 1);
 
         vEyeSpacePosition = (vmtx * mmtx * vec4(position, 1)).xyz;
         vEyeSpaceNormal = normalize(nmtx * normal);
+        vTexCoords = texCoords;
 
         for (int i = 0; i < numLights; i++) {
 	        vShadowCoords[i] = sbmtx * lpmtx[i] * wlmtx[i] * mmtx * vec4(position, 1);
@@ -76,11 +79,15 @@ namespace Acidrain {
     uniform sampler2DShadow shadowMap3;
     uniform sampler2DShadow shadowMap4;
 
+
     uniform vec3 lPosEye[4];
     uniform vec4 matAmbientCol;
     uniform vec4 matDiffuseCol;
     uniform vec4 matSpecularCol;
+    uniform float matShininess;
     uniform int  numLights;
+
+    uniform sampler2D diffuseMap;
 
     struct Light {
     	int type;
@@ -101,6 +108,9 @@ namespace Acidrain {
     in vec3 vEyeSpaceNormal;
     in vec3 vEyeSpacePosition;
     in vec4 vShadowCoords[4];
+    in vec2 vTexCoords;
+
+    const float shadowBias = -0.01;
 
     float lookup(int lightIndex, vec2 offset) {
         if (lightIndex == 0)
@@ -109,7 +119,7 @@ namespace Acidrain {
                 vShadowCoords[lightIndex] + vec4(
                     offset.x * texmapscale.x * vShadowCoords[lightIndex].w,
                     offset.y * texmapscale.y * vShadowCoords[lightIndex].w,
-                    -0.02,
+                    shadowBias,
                     0.0
                 )
             );
@@ -119,7 +129,7 @@ namespace Acidrain {
                 vShadowCoords[lightIndex] + vec4(
                     offset.x * texmapscale.x * vShadowCoords[lightIndex].w,
                     offset.y * texmapscale.y * vShadowCoords[lightIndex].w,
-                    -0.02,
+                    shadowBias,
                     0.0
                 )
             );
@@ -129,7 +139,7 @@ namespace Acidrain {
                 vShadowCoords[lightIndex] + vec4(
                     offset.x * texmapscale.x * vShadowCoords[lightIndex].w,
                     offset.y * texmapscale.y * vShadowCoords[lightIndex].w,
-                    -0.02,
+                    shadowBias,
                     0.0
                 )
             );
@@ -139,39 +149,44 @@ namespace Acidrain {
                 vShadowCoords[lightIndex] + vec4(
                     offset.x * texmapscale.x * vShadowCoords[lightIndex].w,
                     offset.y * texmapscale.y * vShadowCoords[lightIndex].w,
-                    -0.02,
+                    shadowBias,
                     0.0
                 )
             );
     }
 
     void main() {
-    	vec4 finalColor = matAmbientCol;
+    	vec4 finalColor = vec4(0);
         vec3 normal = normalize(vEyeSpaceNormal);
+
+        vec4 diffuseColor = matDiffuseCol * texture(diffuseMap, vTexCoords);
 
     	for (int i = 0; i < numLights; i++) {
 	        vec3 L = (light[i].position - vEyeSpacePosition);
 	        float d = length(L);
 	        L = normalize(L);
-
 	        float diffuse = max(0.0, dot(normal, L));
 
+            vec3 E = normalize(-vEyeSpacePosition);
+            vec3 R = normalize(-reflect(L, vEyeSpaceNormal));
+            float specular = pow(max(dot(R, E), 0.0), 0.3*matShininess);
+
             float shadow = 1.0f;
-//            if (vShadowCoords[i].w > 1.0) {
+            if (vShadowCoords[i].w > 1.0) {
                 float x,y;
                 shadow = 0.0f;
                 for (y = -1.5 ; y <=1.5 ; y+=1.0)
                     for (x = -1.5 ; x <=1.5 ; x+=1.0)
                         shadow += lookup(i, vec2(x,y));
 
-                shadow /= 32.0;
-//            }
-            //diffuse = mix(diffuse, diffuse * shadow, 0.5);
-            //float ambient = mix(1.0, shadow, 0.5);
+                shadow /= 16.0;
+            }
 
-	        //finalColor += matAmbientCol * ambient * light[i].ambient;
-            finalColor += matDiffuseCol * diffuse * light[i].diffuse * shadow;
+            finalColor += matAmbientCol * matDiffuseCol;
+            finalColor += diffuseColor * diffuse * light[i].diffuse * shadow;
+            finalColor += matSpecularCol * specular * shadow;
     	}
+
         outColor = finalColor;
     }
 )";
@@ -179,9 +194,9 @@ namespace Acidrain {
     SceneRenderer::SceneRenderer() {
         glGenFramebuffers(1, &fboId);
 
-        firstPassShadowShader = std::make_shared<Shader>(vs, ps);
+        firstPassShadowShader = make_shared<Shader>(vs, ps);
 
-        firstPassShadowMaterial = std::make_shared<Material>();
+        firstPassShadowMaterial = make_shared<Material>();
         firstPassShadowMaterial->shader = firstPassShadowShader;
         firstPassShadowMaterial->zBufferWrite = true;
         firstPassShadowMaterial->zBufferTest = true;
@@ -189,9 +204,9 @@ namespace Acidrain {
         firstPassShadowMaterial->cullFaces = true;
         firstPassShadowMaterial->cullFrontFaces = false;
 
-        secondPassShadowShader = std::make_shared<Shader>(vs2, ps2);
+        secondPassShadowShader = make_shared<Shader>(vs2, ps2);
 
-        secondPassShadowMaterial = std::make_shared<Material>();
+        secondPassShadowMaterial = make_shared<Material>();
         secondPassShadowMaterial->shader = secondPassShadowShader;
         secondPassShadowMaterial->diffuse = glm::vec4(1, 0, 0, 1);
         secondPassShadowMaterial->zBufferWrite = true;
@@ -208,14 +223,14 @@ namespace Acidrain {
     }
 
 
-    void SceneRenderer::render(const SceneTree& scene, const std::string& cameraName) {
+    void SceneRenderer::render(const SceneTree& scene, const string& cameraName) {
         for (auto& node : scene.lights) {
             LightNode& light = node->asLightNode();
             glActiveTexture(GL_TEXTURE0);
             renderShadowMap(scene, light);
         }
 
-        std::shared_ptr<SceneNode> camNode = scene.nodeByNameAndType(cameraName, SceneNodeType::Camera);
+        shared_ptr<SceneNode> camNode = scene.nodeByNameAndType(cameraName, SceneNodeType::Camera);
         CameraNode& camera = camNode->asCameraNode();
 
         shaderConstants.set(Uniforms::ViewMatrix, camera.viewMatrix);
@@ -235,10 +250,10 @@ namespace Acidrain {
             shaderConstants.set(Uniforms::ShadowMatrix, light.finalShadowMapMatrix[0], lightIndex);
             shaderConstants.set(Uniforms::ShadowBiasMatrix, light.shadowMapBiasMatrix);
 
-            glm::vec3 lightPositionInEyeSpace = light.position - camera.position;
+            vec3 lightPositionInEyeSpace = light.position - camera.position;
             shaderConstants.set(Uniforms::LightPosition, lightPositionInEyeSpace, lightIndex);
 
-            glm::vec3 lightTargetInEyeSpace = light.spotTarget - camera.position;
+            vec3 lightTargetInEyeSpace = light.spotTarget - camera.position;
             shaderConstants.set(Uniforms::LightTarget, lightTargetInEyeSpace, lightIndex);
 
             shaderConstants.set(Uniforms::LightAmbient, light.ambient, lightIndex);
@@ -270,8 +285,7 @@ namespace Acidrain {
             if (node->type == SceneNodeType::Mesh) {
                 MeshNode& meshNode = node->asMeshNode();
 
-                glm::mat3 normalMatrix = glm::inverseTranspose(
-                        glm::mat3(camera.viewMatrix * meshNode.modelToWorldSpaceMatrix));
+                mat3 normalMatrix = inverseTranspose(mat3(camera.viewMatrix * meshNode.modelToWorldSpaceMatrix));
 
                 shaderConstants.set(Uniforms::ModelToWorldMatrix, meshNode.modelToWorldSpaceMatrix);
                 shaderConstants.set(Uniforms::NormalMatrix, normalMatrix);
@@ -281,6 +295,14 @@ namespace Acidrain {
                 shaderConstants.set(Uniforms::MaterialShininess, meshNode.material->shininess);
 
                 shaderConstants.applyTo(*secondPassShadowMaterial->shader);
+
+                if (meshNode.material->textures[TextureRole::Diffuse]) {
+                    int textureUnit = 0;
+                    glActiveTexture(GL_TEXTURE0 + textureUnit);
+                    meshNode.material->textures[TextureRole::Diffuse]->use();
+
+                    secondPassShadowMaterial->shader->setIntUniform(textureUnit, "diffuseMap");
+                }
 
                 meshNode.mesh->render(secondPassShadowMaterial->flatShaded);
             }
