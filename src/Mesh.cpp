@@ -1,7 +1,7 @@
 #include <Mesh.h>
 
 #if defined (__APPLE__)
-    #include <OpenGL/gl3.h>
+#include <OpenGL/gl3.h>
 #endif
 
 namespace Acidrain {
@@ -92,6 +92,35 @@ namespace Acidrain {
         glBindVertexArray(0);
     }
 
+    void Mesh::merge(Mesh& mesh) {
+        vertices.reserve(vertices.size() + mesh.vertices.size());
+        vertices.insert(vertices.end(), mesh.vertices.begin(), mesh.vertices.end());
+
+        int originalFacetsCount = (int) facets.size();
+        facets.reserve(facets.size() + mesh.facets.size());
+        for (auto& facet : mesh.facets) {
+            Facet newFacet = facet;
+            newFacet.a += originalFacetsCount;
+            newFacet.b += originalFacetsCount;
+            newFacet.c += originalFacetsCount;
+            facets.push_back(newFacet);
+        }
+
+        int originalEdgesCount = (int) edges.size();
+        edges.reserve(edges.size() + mesh.edges.size());
+        for (auto& edge : mesh.edges) {
+            Edge newEdge = edge;
+            newEdge.from += originalEdgesCount;
+            newEdge.to += originalEdgesCount;
+            edges.push_back(newEdge);
+        }
+    }
+
+    void Mesh::copy(Mesh& mesh) {
+        vertices = mesh.vertices;
+        facets = mesh.facets;
+        edges = mesh.edges;
+    }
 
     void calculateNormals(Mesh& mesh) {
         for (auto& vertex : mesh.vertices)
@@ -112,6 +141,14 @@ namespace Acidrain {
 
         for (auto& vertex : mesh.vertices)
             vertex.normal = normalize(vertex.normal);
+    }
+
+    void flipNormals(Mesh& mesh) {
+        for (auto& vertex : mesh.vertices)
+            vertex.normal = -vertex.normal;
+
+        for (auto& facet : mesh.facets)
+            facet.normal = -facet.normal;
     }
 
 } // namespace Acidrain

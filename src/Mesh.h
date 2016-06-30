@@ -39,6 +39,8 @@ namespace Acidrain {
         vector<Edge> edges;
 
         void render(bool flatShaded);
+        void merge(Mesh& mesh);
+        void copy(Mesh& mesh);
 
         bool initialized = false;
         GLuint vboId = 0;
@@ -48,5 +50,5 @@ namespace Acidrain {
     };
 
     void calculateNormals(Mesh& mesh);
-
+    void flipNormals(Mesh& mesh);
 } // namespace Acidrain

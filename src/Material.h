@@ -32,7 +32,8 @@ namespace Acidrain {
         Diffuse,
         Specular,
         Normal,
-        Bump
+        Emissive,
+        Environment
     };
 
     typedef map<TextureRole, shared_ptr<Texture>> TextureMap;

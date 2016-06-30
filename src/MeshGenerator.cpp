@@ -1,9 +1,12 @@
 #include <MeshGenerator.h>
 #include <glm/vec2.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 #include <map>
 #include <iostream>
 
 namespace Acidrain {
+
+    using namespace std;
 
     void addVertex(Mesh& m, float x, float y, float z) {
         Vertex v;
@@ -46,7 +49,7 @@ namespace Acidrain {
         if (edge3Visible) m.edges.push_back({c, a});
     }
 
-    std::shared_ptr<Mesh> MeshGenerator::cube() {
+    shared_ptr<Mesh> MeshGenerator::cube() {
         Mesh* result = new Mesh;
 
         addVertex(*result, -0.5, -0.5, -0.5);
@@ -84,13 +87,12 @@ namespace Acidrain {
         addFacet(*result, 6, 3, 7, 0, 1, 1, 0, 1, 1, false, true, true, 0, 1, 0);
 
 
-
         calculateNormals(*result);
-        return std::shared_ptr<Mesh>(result);
+        return shared_ptr<Mesh>(result);
     }
 
 
-    std::shared_ptr<Mesh> MeshGenerator::sphere(int longitudePoints, int latitudePoints) {
+    shared_ptr<Mesh> MeshGenerator::sphere(int longitudePoints, int latitudePoints) {
         Mesh* result = new Mesh;
 
         Vertex v;
@@ -220,10 +222,10 @@ namespace Acidrain {
         }
 
         calculateNormals(*result);
-        return std::shared_ptr<Mesh>(result);
+        return shared_ptr<Mesh>(result);
     }
 
-    std::shared_ptr<Mesh> MeshGenerator::grid(int xSegments, int ySegments) {
+    shared_ptr<Mesh> MeshGenerator::grid(int xSegments, int ySegments) {
         Mesh* result = new Mesh();
         for (int y = 0; y < (ySegments + 1); y++) {
             float yPos = (y / static_cast<float>(ySegments)) - 0.5f;
@@ -260,22 +262,22 @@ namespace Acidrain {
         }
 
         calculateNormals(*result);
-        return std::shared_ptr<Mesh>(result);
+        return shared_ptr<Mesh>(result);
     }
 
-    std::shared_ptr<Mesh> MeshGenerator::cylinder(int xSegments, int ySegments, bool capTop, bool capBottom) {
+    shared_ptr<Mesh> MeshGenerator::cylinder(int xSegments, int ySegments, bool capTop, bool capBottom) {
         Mesh* result = new Mesh();
         for (int y = 0; y <= ySegments; y++) {
-            float yPos = 1.0 - (y / static_cast<float>(ySegments)) - 0.5f;
+            float yPos = 1.0f - (y / static_cast<float>(ySegments)) - 0.5f;
             for (int x = 0; x <= xSegments; x++) {
-                float xPos = 0.5f * sinf((x / static_cast<float>(xSegments)) * 2.0 * M_PI);
-                float zPos = 0.5f * cosf((x / static_cast<float>(xSegments)) * 2.0 * M_PI);
+                float xPos = 0.5f * sinf((x / static_cast<float>(xSegments * 2.0 * M_PI)));
+                float zPos = 0.5f * cosf((x / static_cast<float>(xSegments * 2.0 * M_PI)));
                 addVertex(*result, xPos, yPos, zPos);
             }
         }
 
-        float du = 1.0 / static_cast<float>(xSegments);
-        float dv = 1.0 / static_cast<float>(ySegments + 2); // +2 because of capping
+        float du = 1.0f / static_cast<float>(xSegments);
+        float dv = 1.0f / static_cast<float>(ySegments + 2); // +2 because of capping
 
         for (int y = 0; y < ySegments; y++) {
             for (int x = 0; x < xSegments; x++) {
@@ -304,24 +306,24 @@ namespace Acidrain {
         }
 
         if (capTop) {
-            int topCapIndex = result->vertices.size();
+            int topCapIndex = (int) result->vertices.size();
             addVertex(*result, 0, 0.5, 0);
 
             for (int x = 0; x < xSegments; x++) {
                 addFacet(*result, x, x + 1, topCapIndex,
                          x * du,
-                         1.0 - dv,
+                         1.0f - dv,
                          (x + 1) * du,
-                         1.0 - dv,
+                         1.0f - dv,
                          (x + 0.5f) * du,
-                         1.0,
+                         1.0f,
                          false, false, true);
             }
         }
 
         if (capBottom) {
-            int bottomCapIndex = result->vertices.size();
-            addVertex(*result, 0, -0.5, 0);
+            int bottomCapIndex = (int) result->vertices.size();
+            addVertex(*result, 0, -0.5f, 0);
 
             int offsetOfLastRing = (xSegments + 1) * ySegments;
 
@@ -338,16 +340,188 @@ namespace Acidrain {
         }
 
         calculateNormals(*result);
-        return std::shared_ptr<Mesh>(result);
+        return shared_ptr<Mesh>(result);
     }
 
-    void mapXform(std::shared_ptr<Mesh> mesh,
+    shared_ptr<Mesh> MeshGenerator::cog(float wheelInnerDiameter,
+                                        float wheelOuterDiameter,
+                                        int wheelContourSegments,
+                                        int numberOfTeeth,
+                                        float toothHeight,
+                                        float toothWidthBase,
+                                        float toothWidthTop,
+                                        float cogDepth) {
+
+        shared_ptr<Mesh> mesh = MeshGenerator::revolveObject({
+                                                                     {-wheelInnerDiameter / 2.0f, cogDepth / 2.0f},
+                                                                     {-wheelOuterDiameter / 2.0f, cogDepth / 2.0f},
+                                                                     {-wheelOuterDiameter / 2.0f, -cogDepth / 2.0f},
+                                                                     {-wheelInnerDiameter / 2.0f, -cogDepth / 2.0f},
+                                                                     {-wheelInnerDiameter / 2.0f, cogDepth / 2.0f}
+                                                             }, wheelContourSegments);
+//        return mesh;
+
+        return MeshGenerator::extrude(MeshGenerator::sphere(20, 20), {100, 101, 200, 201, 400, 401}, 0.05, 20);
+    }
+
+    shared_ptr<Mesh> MeshGenerator::revolveObject(vector<vec2> contour, int rotationSteps) {
+        Mesh* mesh = new Mesh();
+
+        // create vertices by revolving the contour
+        for (int i = 0; i < rotationSteps; i++) {
+            for (auto v : contour) {
+                addVertex(*mesh,
+                          (float) (v.x * cos(i * 2.0 * M_PI / rotationSteps)),
+                          v.y,
+                          (float) (v.x * sin(i * 2.0 * M_PI / rotationSteps)));
+            }
+        }
+
+        // create facets by linking between the revolved pieces
+        int numberOfContourVertices = (int) contour.size();
+        for (int i = 0; i < rotationSteps; i++) {
+            int currentRotationIndex = i;
+            int nextRotationIndex = (i + 1) % rotationSteps;
+
+            for (int j = 0; j < (numberOfContourVertices - 1); j++) {
+                int a = currentRotationIndex * numberOfContourVertices + j;
+                int b = currentRotationIndex * numberOfContourVertices + j + 1;
+                int c = nextRotationIndex * numberOfContourVertices + j + 1;
+                int d = nextRotationIndex * numberOfContourVertices + j;
+
+                addFacet(*mesh, a, b, c, 0, 0, 0, 0, 0, 0, false, true, false);
+                addFacet(*mesh, c, d, a, 0, 0, 0, 0, 0, 0, false, true, false);
+            }
+        }
+
+        calculateNormals(*mesh);
+        flipNormals(*mesh);
+        return shared_ptr<Mesh>(mesh);
+    }
+
+    shared_ptr<Mesh> MeshGenerator::extrude(shared_ptr<Mesh> mesh,
+                                            vector<int> facetsToExtrude,
+                                            float extrusionHeight,
+                                            int times) {
+
+        Mesh* result = new Mesh;
+        result->copy(*mesh.get());
+
+        vec3 normalOffset = vec3(0);
+        for (int i = 0; i < times; i++) {
+            vector<int> newFacetsToExtrude;
+            for (int facetIndex : facetsToExtrude) {
+                newFacetsToExtrude.push_back(extrudeFace(result, result->facets[facetIndex], extrusionHeight, normalOffset));
+            }
+            facetsToExtrude = newFacetsToExtrude;
+            normalOffset += vec3(1, 0, 0);
+            calculateNormals(*result);
+        }
+
+//        flipNormals(*result);
+
+        return shared_ptr<Mesh>(result);
+    }
+
+    // returns the index of the extruded face cap
+    int MeshGenerator::extrudeFace(Mesh* mesh, Facet facet, float amount, vec3 normalOffset) {
+
+        int newA = (int) mesh->vertices.size();
+        int newB = (int) mesh->vertices.size() + 1;
+        int newC = (int) mesh->vertices.size() + 2;
+
+        mat4 normalRotationMatrix = rotate(0.2f, normalize(vec3(2, 1, 1)));
+
+        for (int i = 0; i < 3; i++) {
+            vec3 newVertex = mesh->vertices[facet.vertices[i]].position + amount * facet.normal;
+            newVertex = vec3(vec4(newVertex, 1.0f) * normalRotationMatrix);
+            addVertex(*mesh, newVertex.x, newVertex.y, newVertex.z);
+        }
+
+        // AB extrusion plan
+        addFacet(*mesh,
+                 facet.a, facet.b, newB,
+                 facet.textCoords[0].x,
+                 facet.textCoords[0].y,
+                 facet.textCoords[1].x,
+                 facet.textCoords[1].y,
+                 facet.textCoords[1].x,
+                 facet.textCoords[1].y,
+                 true, true, true);
+
+        addFacet(*mesh,
+                 newB, newA, facet.a,
+                 facet.textCoords[1].x,
+                 facet.textCoords[1].y,
+                 facet.textCoords[0].x,
+                 facet.textCoords[0].y,
+                 facet.textCoords[0].x,
+                 facet.textCoords[0].y,
+                 true, true, true);
+
+        // BC extrusion plan
+        addFacet(*mesh,
+                 facet.b, facet.c, newC,
+                 facet.textCoords[1].x,
+                 facet.textCoords[1].y,
+                 facet.textCoords[2].x,
+                 facet.textCoords[2].y,
+                 facet.textCoords[2].x,
+                 facet.textCoords[2].y,
+                 true, true, true);
+
+        addFacet(*mesh,
+                 newC, newB, facet.b,
+                 facet.textCoords[2].x,
+                 facet.textCoords[2].y,
+                 facet.textCoords[1].x,
+                 facet.textCoords[1].y,
+                 facet.textCoords[1].x,
+                 facet.textCoords[1].y,
+                 true, true, true);
+
+        // CA extrusion plan
+        addFacet(*mesh,
+                 facet.c, facet.a, newA,
+                 facet.textCoords[2].x,
+                 facet.textCoords[2].y,
+                 facet.textCoords[0].x,
+                 facet.textCoords[0].y,
+                 facet.textCoords[0].x,
+                 facet.textCoords[0].y,
+                 true, true, true);
+
+        addFacet(*mesh,
+                 newA, newC, facet.c,
+                 facet.textCoords[0].x,
+                 facet.textCoords[0].y,
+                 facet.textCoords[2].x,
+                 facet.textCoords[2].y,
+                 facet.textCoords[2].x,
+                 facet.textCoords[2].y,
+                 true, true, true);
+
+        // facet replica on top
+        addFacet(*mesh,
+                 newA, newB, newC,
+                 facet.textCoords[0].x,
+                 facet.textCoords[0].y,
+                 facet.textCoords[1].x,
+                 facet.textCoords[1].y,
+                 facet.textCoords[2].x,
+                 facet.textCoords[2].y,
+                 true, true, true);
+
+        return (int) (mesh->facets.size() - 1);
+    }
+
+    void mapXform(shared_ptr<Mesh> mesh,
                   TextureGenerator& texgen,
                   unsigned char layer,
                   unsigned char channel,
                   float effectIntensity) {
 
-        std::vector<Vertex> originalVertices(mesh->vertices);
+        vector<Vertex> originalVertices(mesh->vertices);
 
         unsigned char* data = texgen.get(layer);
 
@@ -371,15 +545,15 @@ namespace Acidrain {
                to + (static_cast<unsigned int>(from) << 16);
     }
 
-    void subdivide(std::shared_ptr<Mesh> mesh) {
+    void subdivide(shared_ptr<Mesh> mesh) {
         Vertex v;
 
         // we need to keep the old facets because we're modifying the new ones as we go
-        std::vector<Facet> oldFacets = mesh->facets;
+        vector<Facet> oldFacets = mesh->facets;
 
         // key is encoded as from/to edge, 16 bits each, from in lower 16 bits, to in upper 16 bits
         // "from" is always smaller than "to"
-        std::map<unsigned int, int> subdividedVertices;
+        map<unsigned int, int> subdividedVertices;
 
         int facetIndex = 0;
         for (auto& f : oldFacets) {

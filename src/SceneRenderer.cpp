@@ -302,6 +302,9 @@ namespace Acidrain {
                     meshNode.material->textures[TextureRole::Diffuse]->use();
 
                     secondPassShadowMaterial->shader->setIntUniform(textureUnit, "diffuseMap");
+                } else {
+                    glActiveTexture(GL_TEXTURE0);
+                    glBindTexture(GL_TEXTURE_2D, 0);
                 }
 
                 meshNode.mesh->render(secondPassShadowMaterial->flatShaded);

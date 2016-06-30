@@ -10,13 +10,25 @@ const float DEMO_LENGTH_IN_SECONDS = 100;
 
 int main() {
 
-    Window window(1920, 1200, WindowType::Fullscreen);
+//    Window window(1920, 1200, WindowType::Fullscreen);
+    Window window(1024, 768, WindowType::Windowed);
 
     // --------------------------------------------------------------------------------------
     // Load resources
     // --------------------------------------------------------------------------------------
 
-    DemoData::meshes.push_back(MeshGenerator::sphere(50, 50));
+    TextureGenerator tg(256, 256);
+//    tg.checkerBoard(0, 20, vec4(1), vec4(0));
+    tg.brick(0, 50, 20, 4, vec4(1), vec4(0));
+//    tg.polarGrid(0);
+
+    shared_ptr<Mesh> affectedSphere = MeshGenerator::sphere(50, 50);
+    mapXform(affectedSphere, tg, 0, 0, 0.2f);
+    calculateNormals(*affectedSphere.get());
+
+    affectedSphere = MeshGenerator::cog(0.2, 0.5, 50, 4, 0.1, 0.2, 0.2, 0.1);
+
+    DemoData::meshes.push_back(affectedSphere);
     DemoData::meshes.push_back(MeshGenerator::sphere(50, 50));
     DemoData::meshes.push_back(MeshGenerator::grid(30, 30));
     DemoData::meshes.push_back(MeshGenerator::cube());
@@ -36,6 +48,7 @@ int main() {
 
     auto material2 = make_shared<Material>();
     material2->ambient = glm::vec4(0, 0, 0.15, 1);
+    material2->textures[TextureRole::Diffuse] = textureGenerator->getTexture(0);
 //    material2->diffuse = glm::vec4(0.2, 1.0, 0.7, 1);
     material2->diffuse = glm::vec4(1, 1, 1, 1);
     material2->specular = glm::vec4(0.3, 0.3, 0.3, 1);
@@ -62,12 +75,12 @@ int main() {
     DemoData::materials.push_back(material4);
 
     auto material5 = make_shared<Material>();
-    material5->ambient = glm::vec4(0, 0, 0.15, 1);
+    material5->ambient = glm::vec4(0.1, 0.1, 0.15, 1);
 //    material4->diffuse = glm::vec4(1.0, 0.7, 0.2, 1);
-    material5->diffuse = glm::vec4(0.2, 0.2, 1, 1);
-    material5->specular = glm::vec4(0.3, 0.3, 0.3, 1);
-    material5->shininess = 200;
-    material5->castsShadows = true;
+    material5->diffuse = glm::vec4(1, 1, 1, 1);
+    material5->specular = glm::vec4(1, 1, 1, 1);
+    material5->shininess = 10;
+    material5->castsShadows = false;
     DemoData::materials.push_back(material5);
 
 
@@ -127,8 +140,8 @@ int main() {
     auto bigSphere = make_shared<MeshNode>();
     bigSphere->mesh = DemoData::meshes[0];
     bigSphere->material = DemoData::materials[4];
-    bigSphere->position = glm::vec3(-2, 1, 0);
-    bigSphere->scale = glm::vec3(1);
+    bigSphere->position = glm::vec3(-2, 2, 0);
+    bigSphere->scale = glm::vec3(0.8);
     bigSphere->rotation = glm::angleAxis(3.141529f / 2.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
 
@@ -175,7 +188,7 @@ int main() {
 
     scene->tree->add(camNode);
 
-    scene->tree->add(lightNode);
+//    scene->tree->add(lightNode);
     scene->tree->add(lightNode2);
 
     // --------------------------------------------------------------------------------------
@@ -189,6 +202,8 @@ int main() {
 
         double elapsedSeconds = timer.secondsSinceStart();
 
+        bigSphere->mesh = MeshGenerator::extrude(MeshGenerator::sphere(50, 50), {200, 201, 100, 101, 400, 401}, 0.05, (int) ((sin(elapsedSeconds) + 0.5) * 40));
+
         smallSphere->position = glm::vec3(0, sin(2 * M_PI * 0.13 * elapsedSeconds) * 2.0 + 0.5, 0);
 //        meshNode->position = glm::vec3(0, 0.001, 0);
         //       camNode->target = glm::vec3(0, 0.0001, 0);
@@ -198,7 +213,7 @@ int main() {
 
         lightMeshNode->position = lightNode2->position;
 
-        bigSphere->rotation *= angleAxis((float)(M_PI * timer.lap()), normalize(vec3(0.2, 0.5, 0.3)));
+        bigSphere->rotation *= angleAxis((float)(M_PI/4.0 * timer.lap()), normalize(vec3(0.2, 0.5, 0.3)));
 
         demoPartClear.process(demoPartClear.normalizeTime(elapsedSeconds));
         demoPartScene.process(demoPartScene.normalizeTime(elapsedSeconds));
